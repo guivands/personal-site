@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en" ng-app="ngDirTree">
+<head>
+  <title>Dir Tree [G&sup2;]</title>
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.css">
+
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js"></script>
+  
+  
+  <script src="client/js/g2-tree.js"></script>
+  <link rel="stylesheet" href="client/css/g2-tree.css">
+  
+  <script>
+    var app=angular.module('ngDirTree',['g2-tree']);
+    app.controller('dirTreeCtrl',function($scope,$http,$interval){
+      $scope.selectedNode=false;
+    	$scope.addRemoveArray=false;
+    	$scope.tempNode;
+    	$scope.myTree=[];
+    	$scope.dirName = $scope.uniqueName = '';
+    	$scope.locale='pt';
+    	$scope.errMsgs=[];
+    	$scope.selectNode=function(node){
+    		$scope.selectedNode=node;
+    	}
+    	$scope.addNode=function(){
+    		var uri = "addTreeNode?name="+$scope.dirName+"&uniqueName="+$scope.uniqueName+"&locale="+$scope.locale;
+    		if($scope.tempNode)uri+="&parentId="+$scope.tempNode.id;
+    		$http({
+    			method:'POST',
+    			url:uri,
+    			headers: { 'X-Requested-With' :'XMLHttpRequest'}
+    		}).then(
+    			function(res){//success
+    				if (res.data.error) {	
+    					$scope.errMsgs=res.data.messages;
+    					return;
+    				}
+    				if (res.data.g2Error && res.data.code == 'DIR_UNIQUE_NAME_DUPLICATE') {
+    					$scope.errMsgs = ['Nome único já está sendo utilizado'];
+    					return;
+    				}
+    				$scope.myTree=res.data;
+		    		$('#createNode').modal('hide');
+		    		$scope.dirName='';
+		    		$scope.uniqueName='';
+		    		scope.locale='pt';
+    				$scope.errMsgs = [];
+    			},
+    			function(res){//error
+    				console.log("error adding",res.data);
+   					$scope.errMsgs = ['Um erro inesperado aconteceu'];
+    			}
+    		);
+    	}
+    	$scope.removeNode=function(node){
+    		$scope.addRemoveArray=node;
+    		console.log('removing',node.name);
+    	}
+    	$scope.openModal=function(children,node){
+    		$scope.addRemoveArray=children;
+    		$scope.tempNode=node;
+    		$scope.dirName='';
+    		$('#createNode').modal('show');
+    	}
+  		$('#createNode').on('shown.bs.modal',function(){$('#dirName').focus()});
+    	$http({
+    	  method:'GET',
+    	  url:'fullDirectoryTree'
+    	}).then(function(res){
+    	    $scope.myTree = res.data;
+    	  },
+    	  function(res){console.log('error',res);}
+    	);
+    });
+  </script>
+</head>
+
+
+
+<body ng-controller="dirTreeCtrl">
+	<g2-tree tree="myTree" on-select="selectNode" on-add-node="openModal" on-remove-node="removeNode"></g2-tree>
+  
+  
+	<div id="createNode" class="modal fade" role="dialog">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title">Criar Pasta</h4>
+				</div>
+				<form ng-submit="addNode()">
+					<div class="modal-body">
+						
+						<div class="alert alert-danger" ng-repeat="msg in errMsgs">
+					    <strong>{{msg}}!</strong>
+					  </div>
+					  
+					  
+						<div class="form-group">
+							<label for="dirName">Nome:</label>
+							<input type="text" class="form-control" id="dirName" ng-model="dirName"/>
+						</div>
+						<div class="form-group">
+							<label for="dirName">Nome único:</label>
+							<input type="text" class="form-control" id="uniqueName" ng-model="uniqueName"/>
+						</div>
+						<div class="form-group">
+							<label for="dirName">Locale:</label>
+							<input type="text" class="form-control" id="locale" ng-model="locale""/>
+						</div>
+					</div>
+					<div class="modal-footer">
+						<input type="submit" value="Salvar" class="btn btn-default" />
+						<button type="button" class="btn btn-default" data-dismiss="modal">Fechar</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

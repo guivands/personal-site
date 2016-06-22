@@ -1,0 +1,5 @@
+.g2-folder{margin:0px 8px;}
+.g2-tree-node span{cursor:pointer;}
+.g2-selected-node{font-weight:bold;}
+.g2-children{margin-left:15px;display:block;}
+.g2-children.ng-hide{display:none;}

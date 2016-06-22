@@ -1,0 +1,17 @@
+{
+  "name": "personal-site",
+  "version": "0.0.0",
+  "description": "Site pessoal.",
+  "main": "server.js",
+  "repository": "",
+  "author": "Guilherme Gomes <guilhermevfgomes@gmail.com>",
+  "dependencies": {
+    "async": "~0.2.8",
+    "express": "~4.13.4",
+    "body-parser": "1.15.1",
+    "socket.io": "~0.9.14",
+    "ejs": "2.4.1",
+    "mysql":"2.10.2",
+    "angular-summernote":"0.8.1"
+  }
+}

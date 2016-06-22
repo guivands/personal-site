@@ -1,0 +1,11 @@
+SEO
+http://static.googleusercontent.com/media/www.google.com/pt-BR//webmasters/docs/search-engine-optimization-starter-guide.pdf
+
+META Tags
+http://www.iacquire.com/blog/18-meta-tags-every-webpage-should-have-in-2013
+
+HTML Entities
+https://dev.w3.org/html5/html-author/charref
+
+Tree Angular + Bootstrap
+https://github.com/nickperkinslondon/angular-bootstrap-nav-tree

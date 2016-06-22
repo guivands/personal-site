@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en" ng-app="ngCreatePost">
+  <head>
+    <title>Create Post [G&sup2;]</title>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+  
+    <!--link rel="stylesheet" href="/client/css/bootstrap-responsive.min.css">
+    
+    <script src="/client/js/jquery.hotkeys.js"></script-->
+
+    <!--summernote dependencies-->
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.css">
+
+    <!--summernote-->
+    <link rel="stylesheet" href="client/dist/summernote.css" />
+    <script src="client/dist/summernote.js"></script>
+    <script src="client/dist/lang/summernote-pt-BR.js"></script>
+
+    <!--angular-summernote dependencies -->
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js"></script>
+    <script src="client/js/angular-summernote.min.js"></script>
+    
+    <!-- summernote highlight -->
+    <script src="client/js/summernote-ext-highlight.js"></script>
+    
+    
+  
+  <script>
+    angular.module('ngCreatePost', ['summernote'])
+      .controller('WysiwygController', function($scope, $http){
+        $scope.simpleToolbar=[
+          ['style',['bold','italic','underline','clear']],
+          ['fontsize', ['fontsize']],
+          ['para', ['ul', 'ol', 'paragraph']],
+          ['style',['style']],
+          ['height', ['height']],
+          ['ext',['link','picture','video']],
+          ['highlight',['highlight']],
+          ['misc',['codeview','fullscreen']],
+          ['help',['help']]
+        ];
+        $scope.completeToolbar=[
+          ['err',['undo','redo']],
+          ['text',['bold','italic','underline','strikethrough','superscript','subscript','clear']],
+          ['font', ['fontname','fontsize','color']],
+          ['style',['style']],
+          ['height', ['height']],
+          ['para', ['ul', 'ol', 'paragraph']],
+          ['insert',['table','hr']],
+          ['ext',['link','picture','video']],
+          ['highlight',['highlight']],
+          ['misc',['codeview','fullscreen']],
+          ['help',['help']]
+        ];
+        $scope.options = {
+          focus:true,
+          toolbar:$scope.completeToolbar
+        };
+        $scope.post ={};
+        
+        $scope.createPost = function() {
+          var pdata = {
+      			  uniqueName:$scope.uniqueName,
+      			  title:$scope.title,
+      			  description:$scope.description,
+      			  tags:$scope.tags,
+      			  directoryId:$scope.directoryId,
+      			  path:$scope.path,
+      			  locale:$scope.locale,
+      			  post:$scope.post
+      			};console.log(pdata);
+          $http({
+      			method:'POST',
+      			url:'/addPost',
+      			headers: { 'X-Requested-With' :'XMLHttpRequest'},
+      			data:pdata
+      		}).then(
+      			function(res){//success
+      				if (res.data.error) {
+      				  console.log(res.data);
+      					$scope.errMsgs=res.data.messages;
+      					return;
+      				}
+      				if (res.data.g2Error && res.data.code == 'DIR_UNIQUE_NAME_DUPLICATE') {
+      					$scope.errMsgs = ['Nome único já está sendo utilizado'];
+      					return;
+      				}
+      				console.log('pronto');
+      			},
+      			function(res){//error
+      				console.log("error adding",res.data);
+     					$scope.errMsgs = ['Um erro inesperado aconteceu'];
+      			}
+      		);
+        };
+      });
+  </script>
+  
+  </head>
+
+
+
+<body ng-controller="WysiwygController">
+  
+  <form ng-submit="createPost()">
+    Nome único: <input ng-model="uniqueName"/><br/><br/>
+    Título: <input ng-model="title"/><br/><br/>
+    Description: <input ng-model="description"/><br/><br/>
+    Tags: <input ng-model="tags"/><br/><br/>
+    Diretorio: <input ng-model="directoryId"/><br/><br/>
+    Caminho: <input ng-model="path"/><br/><br/>
+    Locale: <input ng-model="locale"/><br/><br/>
+    <summernote config="options" ng-model="post"></summernote>
+    <input type="submit" value="Salvar" />
+  </form>
+  
+</body>
+</html>
