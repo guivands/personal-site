@@ -8,6 +8,7 @@ var ejs = require('ejs');
 //acesso ao BD
 var db = require('./package/db/pool');
 var pages = require('./pages');
+var i18n = require('./package/i18n/lang');
 
 
 var app = express();
@@ -15,11 +16,14 @@ var app = express();
 app.set('view engine', 'ejs');
 app.set('view options', { layout: false });
 app.use('/client', express.static('client'));
-app.use(function(err, req, res, next){
-  console.error("madafoca");
-});
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+
+// adicionando variavel de internacionalizacao dentro da requisicao para ser utilizado pelos fluxos
+app.use(function(req, res, next) {
+	res.g2messages = res.locals.g2messages = i18n.resolve(req.path);
+	next();
+});
 
 var pool = db.createPool();
 pages.config(app, pool);
