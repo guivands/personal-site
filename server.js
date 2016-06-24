@@ -21,7 +21,12 @@ app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x
 
 // adicionando variavel de internacionalizacao dentro da requisicao para ser utilizado pelos fluxos
 app.use(function(req, res, next) {
-	res.g2messages = res.locals.g2messages = i18n.resolve(req.path);
+	try {
+		res.g2messages = res.locals.g2messages = i18n.resolve(req.path);
+	} catch (err) {
+		console.log(err);
+		res.render('500');
+	}
 	next();
 });
 

@@ -1,5 +1,5 @@
 module.exports = {
-	    title:'Página teste',
-	    content:'Conteúdo da página de teste',
+	    title:'P&aacute;gina teste',
+	    content:'Conte&uacute;do da p&aacute;gina de teste',
 	    createPostTitle:'Create New Post [G&sup2;]'
 };
