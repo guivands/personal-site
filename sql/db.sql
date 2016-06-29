@@ -4,12 +4,13 @@ drop table if exists directory;
 create table directory(
     id bigint primary key auto_increment,
     uniqueName varchar(100) not null,
+    path varchar(100) not null,
     name varchar(20) not null,
     parentId bigint,
     locale varchar(5) not null,
     foreign key (parentId) references directory(id),
     constraint dir_locale_name unique (parentId,name,locale),
-    constraint dir_unique_name unique (uniqueName)
+    constraint dir_locale_path unique (parentId,path,locale)
 );
 
 create table post(

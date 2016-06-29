@@ -9,10 +9,10 @@ var createSQL = function(sqlMap) {
     var type = sqlMap.type;
 	if (!type)
 		type = 'select';
-    
+
     switch(type) {
 		case 'select': return selectSQL(sqlMap);
-		case 'insert': 
+		case 'insert':
 			if (sqlMap.where) {
 				throw new Error('CREATE SQL: tipo insert não pode ter instrução where');
 			}
@@ -20,7 +20,7 @@ var createSQL = function(sqlMap) {
 				throw new Error('CREATE SQL: tipo insert não pode ter instrução orderBy');
 			}
 			if (!sqlMap.fields) {
-				throw new Error('CREATE SQL: tipo update requer instrução fields');
+				throw new Error('CREATE SQL: tipo insert requer instrução fields');
 			}
 			return insertSQL(sqlMap);
 		case 'update':
@@ -48,10 +48,10 @@ var deleteSQL = function(sqlMap) {
 	if (sqlMap.where) {
 		sql += ' where ';
 		var ws = whereSQL(sqlMap.where, ' and ');
-        sql = sql.concat(' where ' + ws.sql);
+        sql = sql.concat(ws.sql);
         params = params.concat(ws.params);
 	}
-	
+
     sql = sql.replace(/ +/g, ' ');
 	return {'sql':sql, 'params': params};
 };
@@ -64,7 +64,7 @@ var updateSQL = function(sqlMap) {
 		params.push(sqlMap.fields[i]);
 	}
 	sql = sql.substring(0, sql.length - 2);
-	
+
 	if (sqlMap.where) {
 		sql += ' where ';
 		var ws = whereSQL(sqlMap.where, ' and ');
@@ -87,7 +87,7 @@ var insertSQL = function(sqlMap) {
 	}
 	fields = fields.substring(0, fields.length - 2);
 	values = values.substring(0, values.length - 2);
-	
+
 	sql += fields + ') values (' + values + ')';
 	return {'sql':sql, 'params':params};
 };
@@ -107,19 +107,19 @@ var selectSQL = function(sqlMap) {
     } else {
         sql = sql.concat(' * ');
     }
-    
+
     sql = sql.concat(' from ').concat(sqlMap.table).concat(' ');
-    
+
     if (sqlMap.where) {
         var ws = whereSQL(sqlMap.where, ' and ');
         sql = sql.concat(' where ' + ws.sql);
         params = params.concat(ws.params);
     }
-    
+
     if(sqlMap.orderBy) {
         sql += orderBy(sqlMap.orderBy);
     }
-    
+
     sql = sql.replace(/ +/g, ' ');
     return {'sql':sql, 'params':params};
 };
@@ -144,7 +144,7 @@ var orderBy = function(ob) {
 
 var whereSQL = function(obj, op) {
     var ret = {sql:'', params:[]};
-    
+
     if (obj.push) {
         for (var i in obj) {
             var e = obj[i];
@@ -196,12 +196,11 @@ var whereFields = function(fields, op) {
 var executeQuery = function (pool, sqlMap, callback) {
     pool.getConnection(function(err, connection) {
         if(err) {
-            return callback(new BizError(err, ERROR_CODES.CONNECTION_ERROR, 
+            return callback(new BizError(err, ERROR_CODES.CONNECTION_ERROR,
                 'Erro ao buscar conexão do Pool de Conexões'));
         }
         try {
             var cs = createSQL(sqlMap);
-            
             connection.query(cs.sql, cs.params, function (err, rows) {
                 if(err) {
                     return callback(err);

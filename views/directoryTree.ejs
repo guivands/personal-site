@@ -2,7 +2,7 @@
 <html lang="en" ng-app="ngDirTree">
 <head>
   <title>Dir Tree [G&sup2;]</title>
-  
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
@@ -11,15 +11,16 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.css">
 
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.5/angular.min.js"></script>
-  
-  
+
+
   <script src="client/js/g2-tree.js"></script>
+  <script src="client/js/remove-diacritics.js"></script>
   <link rel="stylesheet" href="client/css/g2-tree.css">
-  
+
   <script>
     var app=angular.module('ngDirTree',['g2-tree']);
     app.controller('dirTreeCtrl',function($scope,$http,$interval){
-      $scope.selectedNode=false;
+    	$scope.selectedNode=false;
     	$scope.addRemoveArray=false;
     	$scope.tempNode;
     	$scope.myTree=[];
@@ -28,9 +29,13 @@
     	$scope.errMsgs=[];
     	$scope.selectNode=function(node){
     		$scope.selectedNode=node;
-    	}
+    	};
+    	$scope.setPath=function(){
+    		$scope.path = angular.lowercase(removeDiacritics($scope.dirName)).replace(/(\s|[^a-z_.])+/g,'-');
+    		console.log($scope.dirName, $scope.path);
+    	};
     	$scope.addNode=function(){
-    		var uri = "addTreeNode?name="+$scope.dirName+"&uniqueName="+$scope.uniqueName+"&locale="+$scope.locale;
+    		var uri = "addTreeNode?name="+$scope.dirName+"&uniqueName="+$scope.uniqueName+"&locale="+$scope.locale+"&path="+$scope.path;
     		if($scope.tempNode)uri+="&parentId="+$scope.tempNode.id;
     		$http({
     			method:'POST',
@@ -38,19 +43,19 @@
     			headers: { 'X-Requested-With' :'XMLHttpRequest'}
     		}).then(
     			function(res){//success
-    				if (res.data.error) {	
+    				if (res.data.error) {
     					$scope.errMsgs=res.data.messages;
     					return;
     				}
     				if (res.data.g2Error && res.data.code == 'DIR_UNIQUE_NAME_DUPLICATE') {
-    					$scope.errMsgs = ['Nome único já está sendo utilizado'];
+    					$scope.errMsgs = ['Nome &Uacute;nico j&aacute; est&aacute; sendo utilizado'];
     					return;
     				}
     				$scope.myTree=res.data;
 		    		$('#createNode').modal('hide');
 		    		$scope.dirName='';
 		    		$scope.uniqueName='';
-		    		scope.locale='pt';
+		    		$scope.locale='pt';
     				$scope.errMsgs = [];
     			},
     			function(res){//error
@@ -58,26 +63,79 @@
    					$scope.errMsgs = ['Um erro inesperado aconteceu'];
     			}
     		);
-    	}
+    	};
     	$scope.removeNode=function(node){
     		$scope.addRemoveArray=node;
-    		console.log('removing',node.name);
-    	}
+
+			if (!confirm('Remover ' + node.id + ':' + node.name + '?')) {
+				return;
+			}
+
+    		var uri = "removeTreeNode?did="+node.id;
+    		$http({
+    			method:'POST',
+    			url:uri,
+    			headers: { 'X-Requested-With' :'XMLHttpRequest'}
+    		}).then(
+    			function(res){//success
+    				if (res.data.error) {
+    					var msg = '';
+    					for (var i in res.data.messages) {
+    						msg += res.data.messages[i] + '\n';
+    					}
+    					alert(msg);
+    					return;
+    				}
+    				$scope.myTree=res.data;
+    			},
+    			function(res){//error
+   					alert('Um erro inesperado aconteceu');
+    			}
+    		);
+    	};
     	$scope.openModal=function(children,node){
     		$scope.addRemoveArray=children;
     		$scope.tempNode=node;
     		$scope.dirName='';
     		$('#createNode').modal('show');
-    	}
+    	};
+    	$scope.redoTree = function() {
+    		$http({
+   	    	  method:'GET',
+   	    	  url:'/fullDirectoryTree?locale='+$scope.dirTreeLocale
+   	    	}).then(function(res){
+   	    	    $scope.myTree = res.data;
+   	    	  },
+   	    	  function(res){console.log('error',res);}
+   	    	);
+    	};
+
   		$('#createNode').on('shown.bs.modal',function(){$('#dirName').focus()});
-    	$http({
+    	/*$http({
     	  method:'GET',
     	  url:'fullDirectoryTree'
     	}).then(function(res){
     	    $scope.myTree = res.data;
     	  },
     	  function(res){console.log('error',res);}
-    	);
+    	);*/
+    	$http({
+			method:'POST',
+			url:'/dirAvailableLocales',
+			headers: { 'X-Requested-With' :'XMLHttpRequest'}
+		}).then(
+			function(res){//success
+				if (res.data.error) {
+					alert(res.data.messages);
+					return;
+				}
+				$scope.dirTreeLocales = res.data;
+			},
+			function(res){//error
+				console.log("error adding",res.data);
+				alert('Um erro inesperado aconteceu');
+			}
+		);
     });
   </script>
 </head>
@@ -85,9 +143,16 @@
 
 
 <body ng-controller="dirTreeCtrl">
+
+	<select ng-model="dirTreeLocale" ng-change="redoTree()">
+		<option></option>
+		<option ng-repeat="loc in dirTreeLocales" value="{{ loc }}">{{ loc }}</option>
+	</select>
+	<br/><br/><br/>
+
 	<g2-tree tree="myTree" on-select="selectNode" on-add-node="openModal" on-remove-node="removeNode"></g2-tree>
-  
-  
+
+
 	<div id="createNode" class="modal fade" role="dialog">
 		<div class="modal-dialog">
 			<div class="modal-content">
@@ -97,18 +162,22 @@
 				</div>
 				<form ng-submit="addNode()">
 					<div class="modal-body">
-						
+
 						<div class="alert alert-danger" ng-repeat="msg in errMsgs">
 					    <strong>{{msg}}!</strong>
 					  </div>
-					  
-					  
+
+
 						<div class="form-group">
 							<label for="dirName">Nome:</label>
-							<input type="text" class="form-control" id="dirName" ng-model="dirName"/>
+							<input type="text" class="form-control" id="dirName" ng-model="dirName" ng-blur="setPath()"/>
 						</div>
 						<div class="form-group">
-							<label for="dirName">Nome único:</label>
+							<label for="dirName">Caminho:</label>
+							<input type="text" class="form-control" id="path" ng-model="path"/>
+						</div>
+						<div class="form-group">
+							<label for="dirName">Nome &Uacute;nico:</label>
 							<input type="text" class="form-control" id="uniqueName" ng-model="uniqueName"/>
 						</div>
 						<div class="form-group">
