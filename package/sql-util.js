@@ -194,23 +194,14 @@ var whereFields = function(fields, op) {
 };
 
 var executeQuery = function (pool, sqlMap, callback) {
-    pool.getConnection(function(err, connection) {
-        if(err) {
-            return callback(new BizError(err, ERROR_CODES.CONNECTION_ERROR,
-                'Erro ao buscar conexão do Pool de Conexões'));
-        }
-        try {
-            var cs = createSQL(sqlMap);
-            connection.query(cs.sql, cs.params, function (err, rows) {
-                if(err) {
-                    return callback(err);
-                }
-                return callback(null, rows);
-            });
-        } catch (err) {
-            callback(err);
-        }
-    });
+	var cs = createSQL(sqlMap);
+	console.log(cs);
+	pool.query(cs.sql, cs.params, function (err, rows) {
+		if(err) {
+			return callback(err);
+		}
+		return callback(null, rows);
+	});
 };
 
 
