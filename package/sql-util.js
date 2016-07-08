@@ -195,7 +195,6 @@ var whereFields = function(fields, op) {
 
 var executeQuery = function (pool, sqlMap, callback) {
 	var cs = createSQL(sqlMap);
-	console.log(cs);
 	pool.query(cs.sql, cs.params, function (err, rows) {
 		if(err) {
 			return callback(err);
@@ -211,7 +210,7 @@ module.exports.executeQuery = executeQuery;
 
 
 
-/*
+
 var sqlMap = {
     table:'post',
     fields: ['id', 'title', 'description', 'path'],
@@ -299,4 +298,3 @@ cs = createSQL(sqlMapDelete);
 console.log(cs.sql);
 console.log(cs.params);
 console.log('\n');
-*/

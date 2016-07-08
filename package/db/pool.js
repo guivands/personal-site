@@ -7,7 +7,8 @@ exports.createPool = function(){
         host:dbConfig.host,
         user:dbConfig.user,
         password:dbConfig.pass,
-        database:dbConfig.database
+        database:dbConfig.database,
+		connectionLimit:10
     });
     console.log("connection pool created");
     

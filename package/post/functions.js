@@ -133,5 +133,42 @@ var addPost = function(req, res) {
 	isUsed(pool, whereMap, checkUniqueName);
 };
 
+var findPostsByDirectory = function(locale, directoryId, callback) {
+	var selectMap = {
+		table: 'post',
+		fields: ['id', 'uniqueName', 'title', 'directoryId', 'path', 'locale', 'createDate', 'updateDate'],
+		where: {
+			'directoryId': directoryId,
+			'locale': locale
+		}
+	};
+	sqlUtil.executeQuery(pool, selectMap, function(err, rows) {
+		if(err) {
+			if (err.g2Error) {
+				return callback(err);
+			}
+			
+			return callback(new BizError(err, ERROR_CODES.POST_FIND_BY_DIRECTORY, 'Erro ao buscar posts do diretorio "' + directoryId + '"'));
+		}
+		
+		var posts = [];
+		for (i in rows) {
+			var row = rows[i];
+			posts.push({
+				'id': row.id,
+				'uniqueName': row.uniqueName,
+				'title': row.title,
+				'directoryId': row.directoryId,
+				'path': row.path,
+				'locale': row.locale,
+				'createDate': row.createDate,
+				'updateDate': row.updateDate
+			});
+		}
+		callback(null, posts);
+	});
+};
+
 module.exports.findPost = findPost;
 module.exports.addPost = addPost;
+module.exports.findPostsByDirectory = findPostsByDirectory;

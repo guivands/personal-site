@@ -2,6 +2,7 @@ var BizError = require('../error');
 var ERROR_CODES = require('../ERROR_CODES');
 var util = require('../util');
 var sqlUtil = require('../sql-util');
+var post = require('../post/functions');
 
 var pool;
 module.exports.setPool = function(p) {
@@ -194,7 +195,66 @@ var removeTreeNode = function(req, res) {
 	});
 };
 
+
+
+var getDirectoryContent = function(req, res) {
+	var errMsg = util.missingParameter([ {
+		param : req.query.locale,
+		message : 'Locale deve ser fornecido'
+	} ]);
+	if (errMsg) {
+		return res.send(errMsg);
+	}
+	
+	var locale = req.query.locale;
+	var directoryId = req.query.dirId ? req.query.dirId : null;
+	findChildDirectories(locale, directoryId, function(err, dirs) {
+		if (err)
+			err.sendResponse(req, res);
+		
+		post.findPostsByDirectory(locale, directoryId, function(err, posts) {
+			if (err)
+				err.sendResponse(req, res);
+			
+			res.send({'directories': dirs, 'posts': posts});
+		});
+	});
+};
+
+var findChildDirectories = function(locale, directoryId, callback) {
+	var selectMap = {
+		table: 'directory',
+		where: {
+			'parentId': directoryId,
+			'locale': locale
+		}
+	};
+	sqlUtil.executeQuery(pool, selectMap, function (err, rows) {
+		if (err) {
+			if (err.g2Error) {
+				return callback(err);
+			}
+			return callback(new BizError(err, ERROR_CODES.DIR_GET_CONTENT,
+					'Erro ao buscar conteudo do diretorio "' + directoryId + '"'));
+		}
+
+		var dirs = [];
+		for (i in rows) {
+			var row = rows[i];
+			dirs.push({
+				id : row.id,
+				name : row.name,
+				uniqueName : row.uniqueName
+			});
+		}
+		callback(null, dirs);
+	});
+};
+
+
+
 module.exports.fullDirectoryTree = fullDirectoryTree;
 module.exports.addTreeNode = addTreeNode;
 module.exports.removeTreeNode = removeTreeNode;
 module.exports.availableLocales = availableLocales;
+module.exports.getDirectoryContent = getDirectoryContent;
