@@ -1,3 +1,4 @@
+//dependencias do projeto
 var http = require('http');
 var path = require('path');
 var express = require('express');
@@ -5,12 +6,16 @@ var bodyParser = require('body-parser');
 var ejs = require('ejs');
 
 
+//dependencias internas
 //acesso ao BD
 var db = require('./package/db/pool');
+//configuracao de paginas
 var pages = require('./pages');
+//internacionalizacao
 var i18n = require('./package/i18n/lang');
 
 
+//configuracao do expressa e EJS
 var app = express();
 
 app.set('view engine', 'ejs');
@@ -18,6 +23,7 @@ app.set('view options', { layout: false });
 app.use('/client', express.static('client'));
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+
 
 // adicionando variavel de internacionalizacao dentro da requisicao para ser utilizado pelos fluxos
 app.use(function(req, res, next) {
@@ -30,10 +36,24 @@ app.use(function(req, res, next) {
 	next();
 });
 
+// funcao render utilizando a templatizacao do site
+app.use(function(req, res, next) {
+	if (res) {
+		res.g2render = function(page, params) {
+			var g2params = {};
+			g2params.page = '../' + page;
+			g2params.params = params;
+			res.render('template/template', g2params);
+		}
+	}
+	next();
+});
+
+//criando pool de conexões e configurando as páginas do site
 var pool = db.createPool();
 pages.config(app, pool);
 
-
+//iniciando serviço
 var server = app.listen(process.env.PORT || 3000, process.env.IP || "0.0.0.0", function(){
   var addr = server.address();
   console.log("Servidor iniciado em", addr.address + ":" + addr.port);

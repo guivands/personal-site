@@ -210,7 +210,7 @@ module.exports.executeQuery = executeQuery;
 
 
 
-
+/*
 var sqlMap = {
     table:'post',
     fields: ['id', 'title', 'description', 'path'],
@@ -298,3 +298,4 @@ cs = createSQL(sqlMapDelete);
 console.log(cs.sql);
 console.log(cs.params);
 console.log('\n');
+*/

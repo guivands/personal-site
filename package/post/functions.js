@@ -8,6 +8,43 @@ module.exports.setPool = function(p) {
     pool = p;
 };
 
+var findPostById = function(req, res) {
+	var selectMap = {
+		table:'post',
+		where:{
+			'id': req.query.id
+		}
+	};
+	sqlUtil.executeQuery(pool, selectMap, function(err, rows) {
+		if(err) {
+			if (err.g2Error) {
+				return err.sendResponse(req, res);
+			}
+			return new BizError(err, ERROR_CODES.POST_FIND_POST, 'Erro procurando pelo post id "' + req.query.id + '"').sendResponse(req, res);
+		}
+		
+		if(rows.length == 0){
+			return new BizError(err, ERROR_CODES.POST_FIND_POST, 'Nenhum post encontrado').sendResponse(req, res);
+		}
+		
+		var post = {
+			'id' : rows[0].id,
+			'uniqueName' : rows[0].uniqueName,
+			'title' : rows[0].title,
+			'description' : rows[0].description,
+			'tags' : rows[0].tags,
+			'directoryId' : rows[0].directoryId,
+			'path' : rows[0].path,
+			'post' : rows[0].post,
+			'locale' : rows[0].locale,
+			'createDate' : rows[0].createDate,
+			'updateDate': rows[0].updateDate
+		};
+		res.setHeader('content-type', 'text/json');
+		res.send(post);
+	});
+};
+
 var findPost = function(req,res) {
 	// pega só o caminho relativo, com tudo que vem depois de /post/
 	var relPath = req.path.replace(/\/post\//,'');
@@ -61,6 +98,7 @@ var insertPost = function(pool, req, res) {
 			'tags':req.body.tags,
 			'directoryId':req.body.directoryId,
 			'path':req.body.path,
+			'fullpath':req.body.fullpath,
 			'post':req.body.post,
 			'locale':req.body.locale,
 			'createDate':new Date(),
@@ -90,6 +128,7 @@ var addPost = function(req, res) {
 		{param:req.body.description,message:'Description deve ser fornecido'},
 		{param:req.body.tags,message:'Tags deve ser fornecido'},
 		{param:req.body.path,message:'Caminho deve ser fornecido'},
+		{param:req.body.fullpath,message:'Caminho completo deve ser fornecido'},
 		{param:req.body.post,message:'Conteúdo do post deve ser fornecido'},
 		{param:req.body.locale,message:'Locale deve ser fornecido'}
 	]);
@@ -140,7 +179,8 @@ var findPostsByDirectory = function(locale, directoryId, callback) {
 		where: {
 			'directoryId': directoryId,
 			'locale': locale
-		}
+		},
+		orderBy: 'title'
 	};
 	sqlUtil.executeQuery(pool, selectMap, function(err, rows) {
 		if(err) {
@@ -172,3 +212,4 @@ var findPostsByDirectory = function(locale, directoryId, callback) {
 module.exports.findPost = findPost;
 module.exports.addPost = addPost;
 module.exports.findPostsByDirectory = findPostsByDirectory;
+module.exports.findPostById = findPostById;

@@ -38,6 +38,8 @@ var fullDirectoryTree = function(req, res) {
 			id : row.id,
 			name : row.name,
 			uniqueName : row.uniqueName,
+			path: row.path,
+			fullpath: row.fullpath,
 			children : []
 		};
 		arr.push(node);
@@ -131,6 +133,9 @@ var addTreeNode = function(req, res) {
 	}, {
 		param : req.query.path,
 		message : 'Caminho deve ser fornecido'
+	}, {
+		param : req.query.fullpath,
+		message : 'Caminho completo deve ser fornecido'
 	} ]);
 	if (errMsg) {
 		res.send(errMsg);
@@ -147,6 +152,7 @@ var addTreeNode = function(req, res) {
 				'name': req.query.name,
 				'uniqueName': req.query.uniqueName,
 				'path': req.query.path,
+				'fullpath': req.query.fullpath,
 				'parentId': (req.query.parentId ? req.query.parentId : null),
 				'locale': req.query.locale
 			},
@@ -227,7 +233,8 @@ var findChildDirectories = function(locale, directoryId, callback) {
 		where: {
 			'parentId': directoryId,
 			'locale': locale
-		}
+		},
+		orderBy : 'name'
 	};
 	sqlUtil.executeQuery(pool, selectMap, function (err, rows) {
 		if (err) {

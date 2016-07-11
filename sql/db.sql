@@ -5,6 +5,7 @@ create table directory(
     id bigint primary key auto_increment,
     uniqueName varchar(100) not null,
     path varchar(100) not null,
+    fullpath varchar(1000) not null,
     name varchar(20) not null,
     parentId bigint,
     locale varchar(5) not null,
@@ -21,6 +22,7 @@ create table post(
     tags varchar(255),
     directoryId bigint,
     path varchar(255), -- caminho final do post, seria o titulo em forma de url amigavel
+    fullpath varchar(1000) not null,
     post longtext not null,
     locale varchar(5) not null,
     createDate datetime,
@@ -30,3 +32,6 @@ create table post(
     constraint unique_post_path unique (directoryId,path),
     constraint post_unique_name unique (uniqueName)
 );
+
+
+create or replace view postless as select id, uniqueName, title, description, tags, directoryId, path, locale, createDate, updateDate from post;

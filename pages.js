@@ -1,41 +1,61 @@
+//dependencias
 var dirTree = require('./package/dir_tree/functions');
 var post = require('./package/post/functions');
 var i18n = require('./package/i18n/lang.js');
 
+//configuracao de paginas do site
 var config = function(app, pool) {
+	//seta o pool de conexoes para utilizacao nas diferentes funcionalidades do sistema
     dirTree.setPool(pool);
     post.setPool(pool);
 
     //app.all('/*', redirectConfig.redirect);
 
     app.get('/', function(req,res) {
-      res.render('index')
+      res.render('index');
     });
 
+    /*
+     *****************************************
+     * Configuracao de paginas de diretorios *
+     *****************************************
+     */
+    // Manutencao de diretorios
     app.get('/directoryTree', function(req,res) {
       res.render('directoryTree');
     });
-
+    // Chamada assincrona de criacao de diretorio
     app.post('/addTreeNode', dirTree.addTreeNode);
+    // Chamada assincrona de remocao de diretorio
     app.post('/removeTreeNode', dirTree.removeTreeNode);
+    // Chamada assincrona de JSON da arvore completa de diretorios
     app.all('/fullDirectoryTree', dirTree.fullDirectoryTree);
+    // Locales disponiveis na estrutura de diretorios
     app.all('/dirAvailableLocales', dirTree.availableLocales);
+    // Busca conteudo de um diretorio
+    app.all('/dirContent', dirTree.getDirectoryContent);
+	
+	
+	app.all('/test', function(req, res){
+		res.g2render('template/test', {'quero':'morango'});
+	});
 
 
+    /*
+     *****************************************
+     *   Configuracao de paginas de posts    *
+     *****************************************
+     */
+    // Pagina de manutenção de post
     app.get('/createPost', function(req,res){
       res.render('createPost');
     });
-
-    app.post('/addPost', function(req,res){
-      post.addPost(req, res);
-    });
-
+	// Chamada assincrona para buscar post
+	app.all('/findPostById', post.findPostById);
+    // Chamada assincrona para criacao de post
+    app.post('/addPost', post.addPost);
+    // Retornar post e mostrar em tela
     app.all('/post/*', post.findPost);
-
-    app.all(/^\/[a-z]{2}\/.+/, function(req, res) {
-      var lang = i18n.resolve(req.path);
-      res.render('testPage', {'i18n':lang});
-    });
 }
 
 module.exports.config = config;
