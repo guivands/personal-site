@@ -35,6 +35,7 @@ var findPostById = function(req, res) {
 			'tags' : rows[0].tags,
 			'directoryId' : rows[0].directoryId,
 			'path' : rows[0].path,
+			'fullpath' : rows[0].fullpath,
 			'post' : rows[0].post,
 			'locale' : rows[0].locale,
 			'createDate' : rows[0].createDate,
@@ -118,7 +119,7 @@ var insertPost = function(pool, req, res) {
 	});
 };
 
-var addPost = function(req, res) {
+var mergePost = function(req, res) {
 	if (!req.body.directoryId) {
 		req.body.directoryId = null;
 	}
@@ -136,7 +137,42 @@ var addPost = function(req, res) {
 		res.send(errMsg);
 		return;
 	}
+	
+	if (req.body.id) {
+		updatePost(req, res);
+	} else {
+		addPost(req, res);
+	}
+};
 
+var updatePost = function(req, res) {
+	var sqlMap = {
+		type:'update',
+		table:'post',
+		fields:{
+			'description':req.body.description,
+			'tags':req.body.tags,
+			'post':req.body.post,
+			'updateDate':new Date()
+		},
+		where: {
+			'id': req.body.id
+		}
+	};
+	
+	sqlUtil.executeQuery(pool, sqlMap, function(err, rows) {
+		if(err) {
+			if (err.g2Error) {
+				return err.sendResponse(req, res);
+			}
+			
+			return new BizError(err, ERROR_CODES.POST_UPDATE, 'Erro ao atualizar post').sendResponse(req, res);
+		}
+		BizError.success(req, res);
+	});
+};
+
+var addPost = function(req, res) {
 	var whereMap = {'uniqueName':req.body.uniqueName};
 	
 	var checkPathDir = function(err) {
@@ -211,5 +247,7 @@ var findPostsByDirectory = function(locale, directoryId, callback) {
 
 module.exports.findPost = findPost;
 module.exports.addPost = addPost;
+module.exports.updatePost = updatePost;
+module.exports.mergePost = mergePost;
 module.exports.findPostsByDirectory = findPostsByDirectory;
 module.exports.findPostById = findPostById;

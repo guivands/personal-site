@@ -25,9 +25,9 @@ var config = function(app, pool) {
       res.render('directoryTree');
     });
     // Chamada assincrona de criacao de diretorio
-    app.post('/addTreeNode', dirTree.addTreeNode);
+    app.post('/addTreeNode', isLoggedIn, dirTree.addTreeNode);
     // Chamada assincrona de remocao de diretorio
-    app.post('/removeTreeNode', dirTree.removeTreeNode);
+    app.post('/removeTreeNode', isLoggedIn, dirTree.removeTreeNode);
     // Chamada assincrona de JSON da arvore completa de diretorios
     app.all('/fullDirectoryTree', dirTree.fullDirectoryTree);
     // Locales disponiveis na estrutura de diretorios
@@ -36,7 +36,7 @@ var config = function(app, pool) {
     app.all('/dirContent', dirTree.getDirectoryContent);
 	
 	
-	app.all('/test', function(req, res){
+	app.all('/test', isLoggedIn, function(req, res){
 		res.g2render('template/test', {'quero':'morango'});
 	});
 
@@ -47,13 +47,13 @@ var config = function(app, pool) {
      *****************************************
      */
     // Pagina de manutenção de post
-    app.get('/createPost', function(req,res){
+    app.get('/createPost', isLoggedIn, function(req,res){
       res.render('createPost');
     });
 	// Chamada assincrona para buscar post
 	app.all('/findPostById', post.findPostById);
     // Chamada assincrona para criacao de post
-    app.post('/addPost', post.addPost);
+    app.post('/mergePost', isLoggedIn, post.mergePost);
     // Retornar post e mostrar em tela
     app.all('/post/*', post.findPost);
 }

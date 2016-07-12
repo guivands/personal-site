@@ -12,6 +12,7 @@ module.exports = {
     //Erros de gerenciamento de posts
     'POST_FIND_POST': 'POST_FIND_POST', //Erro ao consultar POST por select where path = ?
     'POST_CREATE': 'POST_CREATE', //Erro ao criar post na base de dados
+    'POST_UPDATE': 'POST_UPDATE', //Erro ao atualizar post na base de dados
     'POST_UNIQUE_NAME_DUPLICATE': 'POST_UNIQUE_NAME_DUPLICATE', //Unique name ja existe
     'POST_TITLE_DUPLICATE': 'POST_TITLE_DUPLICATE', //Título ja existe
     'POST_PATH_DUPLICATE': 'POST_PATH_DUPLICATE', //Caminho duplicado para o mesmo diretório

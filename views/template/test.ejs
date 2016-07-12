@@ -40,7 +40,7 @@
 					</span>
 				</div>
 				<div class="col-sm-4 g2icon">
-					<span>
+					<span ng-click="newPost()">
 						<span class="fa fa-file-code-o"></span>
 						<span>&nbsp;Criar post</span>
 					</span>
@@ -52,7 +52,7 @@
 				<span class="g2-folder glyphicon glyphicon-folder-close"></span>
 				<span>{{dir.name}}</span>
 			</div>
-			<div class="row folder-item" ng-repeat="post in dirContent.posts" ng-click="loadPost(post.id)">
+			<div class="row folder-item" ng-repeat="post in dirContent.posts" ng-click="loadPost(post.id)" style="cursor:pointer;">
 				<span class="g2-folder fa fa-file-code-o"></span>
 				<span>{{post.title}}</span>
 			</div>
@@ -117,16 +117,16 @@
 	<div style="height:120px;"></div>
 	<hr/>
 	<div style="height:30px;"></div>
-	<div id="postForm">
+	<div id="postForm" style="display:none">
 		<form>
 			<input type="hidden" ng-model="postId" />
 			<div class="form-group">
 				<label for="dirName">Nome &uacute;nico:</label>
-				<input type="text" class="form-control" id="postUniqueName" ng-model="postUniqueName"/>
+				<input type="text" class="form-control" id="postUniqueName" ng-model="postUniqueName" ng-readonly="!isNewPost"/>
 			</div>
 			<div class="form-group">
 				<label for="dirName">T&iacute;tulo:</label>
-				<input type="text" class="form-control" id="postTitle" ng-model="postTitle" ng-blur="setPath('post')"/>
+				<input type="text" class="form-control" id="postTitle" ng-model="postTitle" ng-blur="setPath('post')" ng-readonly="!isNewPost"/>
 			</div>
 			<div class="form-group">
 				<label for="dirName">Description:</label>
@@ -142,7 +142,7 @@
 			</div>
 			<div class="form-group">
 				<label for="dirName">Caminho:</label>
-				<input type="text" class="form-control" id="postPath" ng-model="postPath" ng-blur="setFullPath('post')"/>
+				<input type="text" class="form-control" id="postPath" ng-model="postPath" ng-blur="setFullPath('post')" ng-readonly="!isNewPost"/>
 			</div>
 			<div class="form-group">
 				<label for="dirName">Caminho completo:</label>
@@ -150,14 +150,14 @@
 			</div>
 			<div class="form-group">
 				<label for="dirName">Locale:</label>
-				<input type="text" class="form-control" id="postLocale" ng-model="postLocale"/>
+				<input type="text" class="form-control" id="postLocale" ng-model="postLocale" ng-readonly="!isNewPost"/>
 			</div>
 			<div class="form-group">
 				<label for="dirName">Post:</label>
 				<summernote config="options" ng-model="post"></summernote>
 			</div>
 			
-			<input type="submit" value="Salvar" class="btn btn-info" ng-click="createPost()" />
+			<input type="submit" value="Salvar" class="btn btn-info" ng-click="mergePost()" />
 		</form>
 	</div>
 </div>
@@ -222,6 +222,7 @@
 			$scope.childrenDirs = node.children;
 			$scope.redoChildren();
 			$scope.postDir = $scope.parentDir = node.name;
+			$scope.showPost(false);
     	};
     	$scope.setPath=function(p){
 			if(p=='post')
@@ -370,7 +371,17 @@
 		
 		
 		
-		$scope.createPost = function() {
+		$scope.newPost = function() {
+			$scope.postUniqueName=$scope.postTitle=$scope.postDescription=$scope.postTags=$scope.postPath=$scope.postFullpath=$scope.postLocale=$scope.post=$scope.postId='';
+			$scope.postFullpath=$scope.selectedNode.fullpath;
+			$scope.showPost(true);
+			$scope.isNewPost=true;
+		};
+		$scope.showPost = function(s) {
+			$('#postForm').css('display',s?'block':'none');
+		};
+		$scope.mergePost = function() {
+			console.log($scope.postFullpath);
 			var pdata = {
       			uniqueName:$scope.postUniqueName,
       			title:$scope.postTitle,
@@ -383,9 +394,10 @@
       			post:$scope.post,
       			id:$scope.postId
       		};
+			console.log(pdata);
 			$http({
       			method:'POST',
-      			url:'/addPost',
+      			url:'/mergePost',
       			headers: { 'X-Requested-With' :'XMLHttpRequest'},
       			data:pdata
       		}).then(
@@ -427,11 +439,13 @@
 					$scope.postTitle=res.data.title;
 					$scope.postDescription=res.data.description;
 					$scope.postTags=res.data.tags;
-					$scope.selectedNode.id=res.data.id;
 					$scope.postPath=res.data.path;
 					$scope.postFullpath=res.data.fullpath;
 					$scope.postLocale=res.data.locale;
 					$scope.post=res.data.post;
+					$scope.postId=res.data.id;
+					$scope.showPost(true);
+					$scope.isNewPost=false;
       			},
       			function(res){//error
       				console.log("error adding",res.data);

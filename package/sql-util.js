@@ -68,7 +68,7 @@ var updateSQL = function(sqlMap) {
 	if (sqlMap.where) {
 		sql += ' where ';
 		var ws = whereSQL(sqlMap.where, ' and ');
-        sql = sql.concat(' where ' + ws.sql);
+        sql = sql.concat(ws.sql);
         params = params.concat(ws.params);
 	}
     sql = sql.replace(/ +/g, ' ');

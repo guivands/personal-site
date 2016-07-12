@@ -1,5 +1,6 @@
 drop table if exists post;
 drop table if exists directory;
+drop table if exists g2user;
 
 create table directory(
     id bigint primary key auto_increment,
@@ -32,6 +33,9 @@ create table post(
     constraint unique_post_path unique (directoryId,path),
     constraint post_unique_name unique (uniqueName)
 );
-
-
 create or replace view postless as select id, uniqueName, title, description, tags, directoryId, path, locale, createDate, updateDate from post;
+
+create table g2user(
+	username varchar(20) primary key,
+	password varchar(100) not null
+);

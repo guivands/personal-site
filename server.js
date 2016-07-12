@@ -3,12 +3,16 @@ var http = require('http');
 var path = require('path');
 var express = require('express');
 var bodyParser = require('body-parser');
+var cookieParser = require('cookie-parser');
 var ejs = require('ejs');
+var passport = require('passport');
+var LocalStrategy = require('passport-local').Strategy;
+var bcrypt = require('bcrypt-nodejs');
 
 
 //dependencias internas
 //acesso ao BD
-var db = require('./package/db/pool');
+require('./package/db/pool');
 //configuracao de paginas
 var pages = require('./pages');
 //internacionalizacao
@@ -21,6 +25,7 @@ var app = express();
 app.set('view engine', 'ejs');
 app.set('view options', { layout: false });
 app.use('/client', express.static('client'));
+app.use( cookieParser() );
 app.use(bodyParser.json()); // for parsing application/json
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 
@@ -49,9 +54,10 @@ app.use(function(req, res, next) {
 	next();
 });
 
+require('./passport.js')(app, passport, LocalStrategy);
+
 //criando pool de conexões e configurando as páginas do site
-var pool = db.createPool();
-pages.config(app, pool);
+pages.config(app, g2pool);
 
 //iniciando serviço
 var server = app.listen(process.env.PORT || 3000, process.env.IP || "0.0.0.0", function(){
