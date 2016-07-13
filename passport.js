@@ -37,7 +37,7 @@ module.exports = function(app, passport, LocalStrategy) {
 
 
 	app.post('/login', passport.authenticate('local', {
-		successRedirect: '/test',
+		successRedirect: '/admin',
 		failureRedirect: '/loginForm'
 	}));
 	

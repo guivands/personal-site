@@ -12,7 +12,13 @@ var config = function(app, pool) {
     //app.all('/*', redirectConfig.redirect);
 
     app.get('/', function(req,res) {
-      res.render('index');
+		post.homeList(function(err, posts){
+			if (err) {
+				console.log(err);
+				return res.g2render('index', {'fadeMenu':true, 'posts':[]});
+			}
+			res.g2render('index', {'fadeMenu':true, 'posts': posts});
+		});
     });
 
     /*

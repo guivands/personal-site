@@ -225,7 +225,7 @@ app.controller('dirTreeCtrl',function($scope,$http,$interval){
 					console.log(res.data);
 					$scope.notifications=[];
 					for(msg in res.data.messages){
-						$scope.notifications.push({type:'danger',msg:msg});
+						$scope.notifications.push({type:'danger',msg:res.data.messages[msg]});
 					}
 					return;
 				}

@@ -8,6 +8,67 @@ module.exports.setPool = function(p) {
     pool = p;
 };
 
+var mapPost = function(row) {
+	return {
+		'id' : row.id,
+		'uniqueName' : row.uniqueName,
+		'title' : row.title,
+		'description' : row.description,
+		'tags' : row.tags,
+		'directoryId' : row.directoryId,
+		'path' : row.path,
+		'fullpath' : row.fullpath,
+		'post' : row.post,
+		'locale' : row.locale,
+		'createDate' : row.createDate,
+		'updateDate': row.updateDate
+	};
+};
+
+var homeList = function(callback){
+	var posts = [];
+
+	var sqlMap = {
+		table:'post',
+		orderBy:{'numVisits':'desc'},
+		limit:'2'
+	};
+	
+	sqlUtil.executeQuery(g2pool, sqlMap, function(err, rows){
+		if(err) {
+			return callback(new BizError(err, ERROR_CODES.POST_HOME_MOST_VIEW, 'Erro ao buscar posts mais acessados'));
+		}
+		var ids = [];
+		for (var i in rows) {
+			posts.push(mapPost(rows[i]));
+			ids.push(rows[i].id);
+		}
+		
+		sqlMap.orderBy = {'createDate':'desc'};
+		sqlMap.limit = 1;
+		if (ids.length > 0) {
+			sqlMap.where = 'id not in (';
+			for(var j = 0; j < ids.length; j++) {
+				sqlMap.where += ids[j];
+				if (j + 1 < ids.length)
+					sqlMap.where += ',';
+			}
+			sqlMap.where += ')';
+		}
+		
+		sqlUtil.executeQuery(g2pool, sqlMap, function(err, rows2){
+			if(err) {
+				return callback(new BizError(err, ERROR_CODES.POST_HOME_LATEST, 'Erro ao buscar post mais novo'));
+			}
+			if (rows2.length > 0) {
+				posts.push(mapPost(rows2[0]));
+			}
+			
+			callback(null, posts);
+		});
+	});
+};
+
 var findPostById = function(req, res) {
 	var selectMap = {
 		table:'post',
@@ -27,20 +88,7 @@ var findPostById = function(req, res) {
 			return new BizError(err, ERROR_CODES.POST_FIND_POST, 'Nenhum post encontrado').sendResponse(req, res);
 		}
 		
-		var post = {
-			'id' : rows[0].id,
-			'uniqueName' : rows[0].uniqueName,
-			'title' : rows[0].title,
-			'description' : rows[0].description,
-			'tags' : rows[0].tags,
-			'directoryId' : rows[0].directoryId,
-			'path' : rows[0].path,
-			'fullpath' : rows[0].fullpath,
-			'post' : rows[0].post,
-			'locale' : rows[0].locale,
-			'createDate' : rows[0].createDate,
-			'updateDate': rows[0].updateDate
-		};
+		var post = mapPost(row[0]);
 		res.setHeader('content-type', 'text/json');
 		res.send(post);
 	});
@@ -102,6 +150,7 @@ var insertPost = function(pool, req, res) {
 			'fullpath':req.body.fullpath,
 			'post':req.body.post,
 			'locale':req.body.locale,
+			'numVisits':0,
 			'createDate':new Date(),
 			'updateDate':new Date()
 		}
@@ -251,3 +300,4 @@ module.exports.updatePost = updatePost;
 module.exports.mergePost = mergePost;
 module.exports.findPostsByDirectory = findPostsByDirectory;
 module.exports.findPostById = findPostById;
+module.exports.homeList = homeList;

@@ -18,6 +18,8 @@ module.exports = {
     'POST_PATH_DUPLICATE': 'POST_PATH_DUPLICATE', //Caminho duplicado para o mesmo diretório
     'POST_COUNT_GT_0': 'POST_COUNT_GT_0', //Verificação se existe na base, count maior que 0 = existe
 	'POST_FIND_BY_DIRECTORY': 'POST_FIND_BY_DIRECTORY', //Erro na busca de posts por diretorio
+	'POST_HOME_MOST_VIEW':'POST_HOME_MOST_VIEW', //Erro ao buscar os posts mais vistos para a home
+	'POST_HOME_LATEST':'POST_HOME_LATEST', //Erro ao buscar o post mais novo para a home
     
     
     'UNEXPECTED_ERROR':'UNEXPECTED_ERROR'

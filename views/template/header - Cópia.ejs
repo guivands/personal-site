@@ -4,16 +4,24 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>GuilhermeGomes</title>
+<title>GuilhermeGom.es</title>
 <!-- Latest compiled and minified CSS -->
-<link href="/client/css/bootstrap.css" rel="stylesheet">
+
+
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+
 <link href="/client/css/style.css" rel="stylesheet">
 <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
-<script src="/client/js/bootstrap.min.js"></script>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+
+
 <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.js"></script>
+<script src="/client/js/typed.js"></script>
 
 <script>
 var app = angular.module('ggomesApp', ['ngAnimate']);
@@ -25,6 +33,7 @@ app.directive('g2Scroll', function($window) {
 		<% if(fadeMenu) { %>
 		angular.element($window).bind('scroll', function() {
 			scope.showMenu = this.pageYOffset >= 100;
+			console.log(scope.showMenu ? 'mostrar' : 'esconder');
 			scope.$apply();
 		});
 		<% } else { %>
@@ -33,12 +42,13 @@ app.directive('g2Scroll', function($window) {
 	};
 });
 </script>
-<% if(!fadeMenu) { %>
-<style>body{padding-top:80px;}</style>
-<% } %>
+
 </head>
 
-<body ng-app="ggomesApp"><a name ="home"></a>
+<body ng-app="ggomesApp">
+	<div style="height:80px"></div>
+	
+	<a name ="home"></a>
 	<nav class="navbar navbar-fixed-top fademenu" ng-show="showMenu" ng-controller="ggomesCtrl" g2-scroll>
 		<div class="container">
 			<div class="navbar-header">
@@ -47,7 +57,7 @@ app.directive('g2Scroll', function($window) {
 					<span class="icon-bar"></span>
 					<span class="icon-bar"></span>
 				</button>
-				<a class="navbar-brand" href="#"><img src="/client/img/logo_menu.png" alt="Logo GuilhermeGomes"/></a>
+				<a class="navbar-brand" href="#"><img src="/client/img/logo_menu.png" alt="Logo Guilhermegomes"/></a>
 			</div>
 			<div class="collapse navbar-collapse" id="g2menu">
 				<ul class="nav navbar-nav navbar-right">
@@ -60,3 +70,5 @@ app.directive('g2Scroll', function($window) {
 			</div>
 		</div>
 	</nav>
+	
+	<div class="container">

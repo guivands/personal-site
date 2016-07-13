@@ -120,6 +120,13 @@ var selectSQL = function(sqlMap) {
         sql += orderBy(sqlMap.orderBy);
     }
 
+	if (sqlMap.limit) {
+		if (sqlMap.limit.max) {
+			sql += ' limit ' + (sqlMap.limit.first ? sqlMap.limit.first + ',' : '') + sqlMap.limit.max;
+		}
+		sql += ' limit ' + sqlMap.limit;
+	}
+	
     sql = sql.replace(/ +/g, ' ');
     return {'sql':sql, 'params':params};
 };

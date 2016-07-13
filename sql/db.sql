@@ -26,6 +26,7 @@ create table post(
     fullpath varchar(1000) not null,
     post longtext not null,
     locale varchar(5) not null,
+	numVisits int,
     createDate datetime,
     updateDate datetime,
     foreign key (directoryId) references directory(id),
