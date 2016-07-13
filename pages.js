@@ -35,9 +35,9 @@ var config = function(app, pool) {
     // Busca conteudo de um diretorio
     app.all('/dirContent', dirTree.getDirectoryContent);
 	
-	
-	app.all('/test', isLoggedIn, function(req, res){
-		res.g2render('template/test', {'quero':'morango'});
+
+	app.all('/admin/', isLoggedIn, function(req, res){
+		res.g2render('adm/index', {'fadeMenu':false});
 	});
 
 

@@ -23,13 +23,33 @@
 <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.js"></script>
 <script src="/client/js/typed.js"></script>
 
+<script>
+var app = angular.module('ggomesApp', ['ngAnimate']);
+app.controller('ggomesCtrl',function($scope,$http,$interval,$animate) {
+	$scope.showMenu=false;
+});
+app.directive('g2Scroll', function($window) {
+	return function(scope, elements, attrs) {
+		<% if(fadeMenu) { %>
+		angular.element($window).bind('scroll', function() {
+			scope.showMenu = this.pageYOffset >= 100;
+			console.log(scope.showMenu ? 'mostrar' : 'esconder');
+			scope.$apply();
+		});
+		<% } else { %>
+		scope.showMenu = true;
+		<% } %>
+	};
+});
+</script>
+
 </head>
 
-<body>
+<body ng-app="ggomesApp">
 	<div style="height:80px"></div>
 	
 	<a name ="home"></a>
-	<nav class="navbar navbar-fixed-top fade" ng-show="showMenu">
+	<nav class="navbar navbar-fixed-top fademenu" ng-show="showMenu" ng-controller="ggomesCtrl" g2-scroll>
 		<div class="container">
 			<div class="navbar-header">
 				<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#g2menu">

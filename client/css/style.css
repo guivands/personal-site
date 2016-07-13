@@ -156,10 +156,10 @@ textarea{
 	font-size:44px;
 	position:relative;
 }
-.fade .ng-hide {
+.fademenu.ng-hide {
 	opacity: 0;
 		}
-.fade {
+.fademenu {
 	opacity: 1;
 	transition: 0.5s linear opacity;
 	background-color: rgba(0, 0, 0, 0.9);
