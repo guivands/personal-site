@@ -36,158 +36,178 @@
 }
 </style>
 
-  
-<div ng-app="ngDirTree" ng-controller="dirTreeCtrl">
+<div class="container" style="padding-top:20px;">
+	<div ng-app="ngDirTree" ng-controller="dirTreeCtrl">
 
-	<div class="g2notify">
-		<div ng-repeat="notification in notifications" class="alert alert-{{notification.type}} fade in">
-			<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-			{{notification.msg}}
-		</div>
-	</div>
-	
-	
-	<div class="row">
-		<div class="col-sm-3" style="border-right:3px double #ccc">
-
-			<select ng-model="dirTreeLocale" ng-change="redoTree()">
-				<option></option>
-				<option ng-repeat="loc in dirTreeLocales" value="{{ loc }}">{{ loc }}</option>
-			</select>
-			<br/><br/><br/>
-
-			<!--g2-tree tree="myTree" on-select="selectNode" on-add-node="openModal"></g2-tree-->
-			<g2-tree tree="myTree" on-select="selectNode" on-remove-node="removeNode"></g2-tree>
+		<div class="g2notify">
+			<div ng-repeat="notification in notifications" class="alert alert-{{notification.type}} fade in">
+				<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+				{{notification.msg}}
+			</div>
 		</div>
 		
-		<div class="col-sm-9">
-			<!-- Area de controle -->
-			<div class="row dirContentMenu" style="border-bottom:1px solid #ccc;">
-				<div class="col-sm-4 g2icon">
-					<span ng-click="openModal()">
-						<span class="glyphicon glyphicon-folder-open"></span>
-						<span>&nbsp;Criar pasta</span>
-					</span>
-				</div>
-				<div class="col-sm-4 g2icon">
-					<span ng-click="newPost()">
-						<span class="fa fa-file-code-o"></span>
-						<span>&nbsp;Criar post</span>
-					</span>
-				</div>
+		
+		<div class="row">
+			<div class="col-sm-3" style="border-right:3px double #ccc">
+
+				<select ng-model="dirTreeLocale" ng-change="redoTree()">
+					<option></option>
+					<option ng-repeat="loc in dirTreeLocales" value="{{ loc }}">{{ loc }}</option>
+				</select>
+				<br/><br/><br/>
+
+				<!--g2-tree tree="myTree" on-select="selectNode" on-add-node="openModal"></g2-tree-->
+				<g2-tree tree="myTree" on-select="selectNode" on-remove-node="removeNode"></g2-tree>
 			</div>
 			
-			<!-- Area de conteudo do diretorio -->
-			<div class="row folder-item" ng-repeat="dir in dirContent.directories">
-				<span class="g2-folder glyphicon glyphicon-folder-close"></span>
-				<span>{{dir.name}}</span>
-			</div>
-			<div class="row folder-item" ng-repeat="post in dirContent.posts" ng-click="loadPost(post.id)" style="cursor:pointer;">
-				<span class="g2-folder fa fa-file-code-o"></span>
-				<span>{{post.title}}</span>
-			</div>
-		</div>
-	</div>
-
-
-	<div id="createNode" class="modal fade" role="dialog">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<button type="button" class="close" data-dismiss="modal">&times;</button>
-					<h4 class="modal-title">Criar Pasta</h4>
+			<div class="col-sm-9">
+				<!-- Area de controle -->
+				<div class="row dirContentMenu" style="border-bottom:1px solid #ccc;">
+					<div class="col-sm-4 g2icon">
+						<span ng-click="openModal()">
+							<span class="glyphicon glyphicon-folder-open"></span>
+							<span>&nbsp;Criar pasta</span>
+						</span>
+					</div>
+					<div class="col-sm-4 g2icon">
+						<span ng-click="newPost()">
+							<span class="fa fa-file-code-o"></span>
+							<span>&nbsp;Criar post</span>
+						</span>
+					</div>
 				</div>
-				<form ng-submit="addNode()">
-					<div class="modal-body">
-
-						<div class="alert alert-danger" ng-repeat="msg in errMsgs">
-							<strong>{{msg}}!</strong>
-						</div>
-
-
-						<div class="form-group">
-							<label for="dirName">Diret&oacute;rio pai:</label>
-							<input type="text" class="form-control" id="parentDir" ng-model="parentDir" disabled="disabled"/>
-						</div>
-						<div class="form-group">
-							<label for="dirName">Nome:</label>
-							<input type="text" class="form-control" id="dirName" ng-model="dirName" ng-blur="setPath()" maxlength="20"/>
-						</div>
-						<div class="form-group">
-							<label for="dirName">Caminho:</label>
-							<input type="text" class="form-control" id="path" ng-model="path" ng-blur="setFullPath()" maxlength="100"/>
-						</div>
-						<div class="form-group">
-							<label for="dirName">Caminho completo:</label>
-							<input type="text" class="form-control" id="fullpath" ng-model="fullpath" readonly="readonly"/>
-						</div>
-						<div class="form-group">
-							<label for="dirName">Nome &Uacute;nico:</label>
-							<input type="text" class="form-control" id="uniqueName" ng-model="uniqueName"maxlength="100"/>
-						</div>
-						<div class="form-group">
-							<label for="dirName">Locale:</label>
-							<input type="text" class="form-control" id="locale" ng-model="locale" maxlength="2"/>
-						</div>
-					</div>
-					<div class="modal-footer">
-						<input type="submit" value="Salvar" class="btn btn-info" />
-						<input type="button" value="Fechar" class="btn btn-default" data-dismiss="modal" />
-					</div>
-				</form>
+				
+				<!-- Area de conteudo do diretorio -->
+				<div class="row folder-item" ng-repeat="dir in dirContent.directories">
+					<span class="g2-folder glyphicon glyphicon-folder-close"></span>
+					<span>{{dir.name}}</span>
+				</div>
+				<div class="row folder-item" ng-repeat="post in dirContent.posts" ng-click="loadPost(post.id)" style="cursor:pointer;">
+					<span class="g2-folder fa fa-file-code-o"></span>
+					<span>{{post.title}}</span>
+				</div>
 			</div>
 		</div>
-	</div>
-	
-	
-	
-	
-	
-	<!-- criacao de post -->
-	<div style="height:120px;"></div>
-	<hr/>
-	<div style="height:30px;"></div>
-	<div id="postForm" style="display:none">
-		<form>
-			<input type="hidden" ng-model="postId" />
-			<div class="form-group">
-				<label for="dirName">Nome &uacute;nico:</label>
-				<input type="text" class="form-control" id="postUniqueName" ng-model="postUniqueName" ng-readonly="!isNewPost" maxlength="100"/>
+
+
+		<div id="createNode" class="modal fade" role="dialog">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal">&times;</button>
+						<h4 class="modal-title">Criar Pasta</h4>
+					</div>
+					<form ng-submit="addNode()">
+						<div class="modal-body">
+
+							<div class="alert alert-danger" ng-repeat="msg in errMsgs">
+								<strong>{{msg}}!</strong>
+							</div>
+
+
+							<div class="form-group">
+								<label for="dirName">Diret&oacute;rio pai:</label>
+								<input type="text" class="form-control" id="parentDir" ng-model="parentDir" disabled="disabled"/>
+							</div>
+							<div class="form-group">
+								<label for="dirName">Nome:</label>
+								<input type="text" class="form-control" id="dirName" ng-model="dirName" ng-blur="setPath()" maxlength="20"/>
+							</div>
+							<div class="form-group">
+								<label for="dirName">Caminho:</label>
+								<input type="text" class="form-control" id="path" ng-model="path" ng-blur="setFullPath()" maxlength="100"/>
+							</div>
+							<div class="form-group">
+								<label for="dirName">Caminho completo:</label>
+								<input type="text" class="form-control" id="fullpath" ng-model="fullpath" readonly="readonly"/>
+							</div>
+							<div class="form-group">
+								<label for="dirName">Nome &Uacute;nico:</label>
+								<input type="text" class="form-control" id="uniqueName" ng-model="uniqueName"maxlength="100"/>
+							</div>
+							<div class="form-group">
+								<label for="dirName">Locale:</label>
+								<input type="text" class="form-control" id="locale" ng-model="locale" maxlength="2"/>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<input type="submit" value="Salvar" class="btn btn-info" />
+							<input type="button" value="Fechar" class="btn btn-default" data-dismiss="modal" />
+						</div>
+					</form>
+				</div>
 			</div>
-			<div class="form-group">
-				<label for="dirName">T&iacute;tulo:</label>
-				<input type="text" class="form-control" id="postTitle" ng-model="postTitle" ng-blur="setPath('post')" ng-readonly="!isNewPost" maxlength="255"/>
+		</div>
+		
+		
+		
+		
+		
+		<!-- criacao de post -->
+		<div style="height:120px;"></div>
+		<hr/>
+		<div style="height:30px;"></div>
+		<div id="postForm" style="display:none">
+			<div id="#fileUpload" style="display:{{imageUpload}}">
+				<div class="row">
+					<div class="col-sm-6">
+						THUMBNAIL<BR/>
+						<input type="file" name="image" id="thumbnail" class="form-control"/>
+						<button name="submit" ng-click="upload('thumbnail')" class="btn btn-success">Upload</button>
+						<br/><br/>
+						<img ng-if="selectedPost.thumbnail" src="/client/up/post/{{selectedPost.id}}/{{selectedPost.thumbnail}}" width="200"/>
+					</div>
+					<div class="col-sm-6">
+						POSTER<BR/>
+						<input type="file" name="image" id="poster" class="form-control"/>
+						<button name="submit" ng-click="upload('poster')" class="btn btn-success">Upload</button>
+						<br/><br/>
+						<img ng-if="selectedPost.thumbnail" src="/client/up/post/{{selectedPost.id}}/{{selectedPost.poster}}" width="200"/>
+					</div>
+				</div>
+				<hr/>
 			</div>
-			<div class="form-group">
-				<label for="dirName">Description:</label>
-				<input type="text" class="form-control" id="postDescription" ng-model="postDescription" maxlength="255"/>
-			</div>
-			<div class="form-group">
-				<label for="dirName">Tags:</label>
-				<input type="text" class="form-control" id="postTags" ng-model="postTags" maxlength="255"/>
-			</div>
-			<div class="form-group">
-				<label for="dirName">Diret&oacute;rio:</label>
-				<input type="text" class="form-control" id="postDir" ng-model="postDir" disabled="disabled"/>
-			</div>
-			<div class="form-group">
-				<label for="dirName">Caminho:</label>
-				<input type="text" class="form-control" id="postPath" ng-model="postPath" ng-blur="setFullPath('post')" ng-readonly="!isNewPost" maxlength="255"/>
-			</div>
-			<div class="form-group">
-				<label for="dirName">Caminho completo:</label>
-				<input type="text" class="form-control" id="postFullpath" ng-model="postFullpath" readonly="readonly"/>
-			</div>
-			<div class="form-group">
-				<label for="dirName">Locale:</label>
-				<input type="text" class="form-control" id="postLocale" ng-model="postLocale" ng-readonly="!isNewPost" maxlength="2"/>
-			</div>
-			<div class="form-group">
-				<label for="dirName">Post:</label>
-				<summernote config="options" ng-model="post"></summernote>
-			</div>
-			
-			<input type="submit" value="Salvar" class="btn btn-info" ng-click="mergePost()" />
-		</form>
+			<form>
+				<input type="hidden" ng-model="postId" />
+				<div class="form-group">
+					<label for="dirName">Nome &uacute;nico:</label>
+					<input type="text" class="form-control" id="postUniqueName" ng-model="postUniqueName" ng-readonly="!isNewPost" maxlength="100"/>
+				</div>
+				<div class="form-group">
+					<label for="dirName">T&iacute;tulo:</label>
+					<input type="text" class="form-control" id="postTitle" ng-model="postTitle" ng-blur="setPath('post')" ng-readonly="!isNewPost" maxlength="255"/>
+				</div>
+				<div class="form-group">
+					<label for="dirName">Description:</label>
+					<input type="text" class="form-control" id="postDescription" ng-model="postDescription" maxlength="255"/>
+				</div>
+				<div class="form-group">
+					<label for="dirName">Tags:</label>
+					<input type="text" class="form-control" id="postTags" ng-model="postTags" maxlength="255"/>
+				</div>
+				<div class="form-group">
+					<label for="dirName">Diret&oacute;rio:</label>
+					<input type="text" class="form-control" id="postDir" ng-model="postDir" disabled="disabled"/>
+				</div>
+				<div class="form-group">
+					<label for="dirName">Caminho:</label>
+					<input type="text" class="form-control" id="postPath" ng-model="postPath" ng-blur="setFullPath('post')" ng-readonly="!isNewPost" maxlength="255"/>
+				</div>
+				<div class="form-group">
+					<label for="dirName">Caminho completo:</label>
+					<input type="text" class="form-control" id="postFullpath" ng-model="postFullpath" readonly="readonly"/>
+				</div>
+				<div class="form-group">
+					<label for="dirName">Locale:</label>
+					<input type="text" class="form-control" id="postLocale" ng-model="postLocale" ng-readonly="!isNewPost" maxlength="2"/>
+				</div>
+				<div class="form-group">
+					<label for="dirName">Post:</label>
+					<summernote config="options" ng-model="post"></summernote>
+				</div>
+				
+				<input type="submit" value="Salvar" class="btn btn-info" ng-click="mergePost()" />
+			</form>
+		</div>
 	</div>
 </div>

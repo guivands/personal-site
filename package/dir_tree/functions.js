@@ -4,35 +4,29 @@ var util = require('../util');
 var sqlUtil = require('../sql-util');
 var post = require('../post/functions');
 
-var pool;
-module.exports.setPool = function(p) {
-	pool = p;
-};
-
-var availableLocales = function(req, res) {
+var availableLocales = function(callback) {
 	var selectMap = {
 		table: 'directory',
 		fields: 'distinct(locale) as disloc'
 	};
-	sqlUtil.executeQuery(pool, selectMap, function(err, rows) {
+	sqlUtil.executeQuery(g2pool, selectMap, function(err, rows) {
 		if (err) {
 			if (err.g2Error) {
-				return err.sendResponse(req, res);
+				return callback(err);
 			}
-			return new BizError(err, ERROR_CODES.DIR_SELECT_ALL,
-					'Erro carregando arvore de diretorios').sendResponse(req,
-					res);
+			return callback(new BizError(err, ERROR_CODES.DIR_SELECT_ALL,
+					'Erro carregando arvore de diretorios'));
 		}
 
 		var responseArray = [];
 		for (var i in rows) {
 			responseArray.push(rows[i].disloc);
 		}
-		res.send(responseArray);
+		callback(null, responseArray);
 	});
 };
 
-var fullDirectoryTree = function(req, res) {
+var fullDirectoryTree = function(locale, callback) {
 	function addDirToArray(arr, row) {
 		var node = {
 			id : row.id,
@@ -57,26 +51,25 @@ var fullDirectoryTree = function(req, res) {
 	}
 
 	var errMsg = util.missingParameter([ {
-		param : req.query.locale,
+		param : locale,
 		message : 'Locale deve ser fornecido'
 	} ]);
 	if (errMsg) {
-		return res.send(errMsg);
+		return callback(errMsg);
 	}
 
 	var findAllDir = {
 		table : 'directory',
-		where : { 'locale' : req.query.locale },
+		where : { 'locale' : locale },
 		orderBy : ['parentId','name']
 	};
-	sqlUtil.executeQuery(pool, findAllDir, function(err, rows) {
+	sqlUtil.executeQuery(g2pool, findAllDir, function(err, rows) {
 		if (err) {
 			if (err.g2Error) {
-				return err.sendResponse(req, res);
+				return callback(err);
 			}
-			return new BizError(err, ERROR_CODES.DIR_SELECT_ALL,
-					'Erro carregando arvore de diretorios').sendResponse(req,
-					res);
+			return callback(new BizError(err, ERROR_CODES.DIR_SELECT_ALL,
+					'Erro carregando arvore de diretorios'));
 		}
 		var dirTree = [];
 		var index;
@@ -88,8 +81,8 @@ var fullDirectoryTree = function(req, res) {
 				findBeforeAdd(dirTree, row);
 			}
 		}
-		res.setHeader('content-type', 'text/javascript');
-		res.send(dirTree);
+		
+		callback(null, dirTree);
 	});
 };
 
@@ -102,7 +95,7 @@ var isValidUniqueName = function(uniqueName, locale, callback) {
 			'locale': locale
 		}
 	};
-	sqlUtil.executeQuery(pool, countUnique, function(err, rows) {
+	sqlUtil.executeQuery(g2pool, countUnique, function(err, rows) {
 		if (err) {
 			if (err.g2Error) {
 				return callback(err);
@@ -120,109 +113,106 @@ var isValidUniqueName = function(uniqueName, locale, callback) {
 	});
 };
 
-var addTreeNode = function(req, res) {
+var addTreeNode = function(params, callback) {
 	var errMsg = util.missingParameter([ {
-		param : req.query.name,
+		param : params.name,
 		message : 'Nome deve ser fornecido'
 	}, {
-		param : req.query.uniqueName,
+		param : params.uniqueName,
 		message : 'Nome único deve ser fornecido'
 	}, {
-		param : req.query.locale,
+		param : params.locale,
 		message : 'Locale deve ser fornecido'
 	}, {
-		param : req.query.path,
+		param : params.path,
 		message : 'Caminho deve ser fornecido'
 	}, {
-		param : req.query.fullpath,
+		param : params.fullpath,
 		message : 'Caminho completo deve ser fornecido'
 	} ]);
 	if (errMsg) {
 		res.send(errMsg);
 		return;
 	}
-	isValidUniqueName(req.query.uniqueName, req.query.locale, function(err) {
+	isValidUniqueName(params.uniqueName, params.locale, function(err) {
 		if (err) {
-			return err.sendResponse(req, res);
+			return callback(err);
 		}
 
 		var insertMap = {
 			table: 'directory',
 			fields: {
-				'name': req.query.name,
-				'uniqueName': req.query.uniqueName,
-				'path': req.query.path,
-				'fullpath': req.query.fullpath,
-				'parentId': (req.query.parentId ? req.query.parentId : null),
-				'locale': req.query.locale
+				'name': params.name,
+				'uniqueName': params.uniqueName,
+				'path': params.path,
+				'fullpath': params.fullpath,
+				'parentId': (params.parentId ? params.parentId : null),
+				'locale': params.locale
 			},
 			type:'insert'
 		};
-		sqlUtil.executeQuery(pool, insertMap, function (err) {
+		sqlUtil.executeQuery(g2pool, insertMap, function (err) {
 			if (err) {
 				if (err.g2Error) {
-					return err.sendResponse(req, res);
+					return callback(err);
 				}
-				return new BizError(err, ERROR_CODES.DIR_INSERT_QUERY,
-						'Erro ao buscar conexão do Pool de Conexões').sendResponse(req, res);
+				return callback(new BizError(err, ERROR_CODES.DIR_INSERT_QUERY,
+						'Erro ao buscar conexão do Pool de Conexões'));
 			}
 
-			fullDirectoryTree(req, res);
+			fullDirectoryTree(params.locale, callback);
 		});
 	});
 
 };
 
-var removeTreeNode = function(req, res) {
+var removeTreeNode = function(directoryId, locale, callback) {
 	var errMsg = util.missingParameter([ {
-		param : req.query.did,
+		param : directoryId,
 		message : 'ID deve ser fornecido'
 	} ]);
 	if (errMsg) {
-		res.send(errMsg);
-		return;
+		return callback(errMsg);
 	}
 
 	var deleteMap = {
 		table: 'directory',
-		where: {'id': req.query.did},
+		where: {'id': directoryId},
 		type:'delete'
 	};
-	sqlUtil.executeQuery(pool, deleteMap, function(err) {
+	sqlUtil.executeQuery(g2pool, deleteMap, function(err) {
 		if (err) {
 			if (err.g2Error) {
 				return callback(err);
 			}
-			return new BizError(err, ERROR_CODES.DIR_INSERT_QUERY,
-					'Erro ao buscar conexão do Pool de Conexões').sendResponse(req, res);
+			return callback(new BizError(err, ERROR_CODES.DIR_INSERT_QUERY,
+					'Erro ao buscar conexão do Pool de Conexões'));
 		}
 
-		fullDirectoryTree(req, res);
+		fullDirectoryTree(locale, callback);
 	});
 };
 
 
 
-var getDirectoryContent = function(req, res) {
+var getDirectoryContent = function(locale, directoryId, callback) {
 	var errMsg = util.missingParameter([ {
-		param : req.query.locale,
+		param : locale,
 		message : 'Locale deve ser fornecido'
 	} ]);
 	if (errMsg) {
 		return res.send(errMsg);
 	}
 	
-	var locale = req.query.locale;
-	var directoryId = req.query.dirId ? req.query.dirId : null;
 	findChildDirectories(locale, directoryId, function(err, dirs) {
 		if (err)
-			err.sendResponse(req, res);
+			return callback(err);
 		
 		post.findPostsByDirectory(locale, directoryId, function(err, posts) {
 			if (err)
-				err.sendResponse(req, res);
+				return callback(err);
 			
-			res.send({'directories': dirs, 'posts': posts});
+			callback(null, {'directories': dirs, 'posts': posts});
 		});
 	});
 };
@@ -236,7 +226,7 @@ var findChildDirectories = function(locale, directoryId, callback) {
 		},
 		orderBy : 'name'
 	};
-	sqlUtil.executeQuery(pool, selectMap, function (err, rows) {
+	sqlUtil.executeQuery(g2pool, selectMap, function (err, rows) {
 		if (err) {
 			if (err.g2Error) {
 				return callback(err);

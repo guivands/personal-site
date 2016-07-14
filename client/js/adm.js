@@ -33,7 +33,7 @@ app.controller('dirTreeCtrl',function($scope,$http,$interval){
 	$scope.post ={};
 	
 	
-	
+	$scope.imageUpload='none';
 	$scope.notifications=[];
 	$scope.selectedNode=false;
 	$scope.addRemoveArray=false;
@@ -195,6 +195,7 @@ app.controller('dirTreeCtrl',function($scope,$http,$interval){
 		$scope.postFullpath=$scope.selectedNode.fullpath;
 		$scope.showPost(true);
 		$scope.isNewPost=true;
+		$scope.imageUpload='none';
 	};
 	$scope.showPost = function(s) {
 		$('#postForm').css('display',s?'block':'none');
@@ -266,6 +267,7 @@ app.controller('dirTreeCtrl',function($scope,$http,$interval){
 					$scope.errMsgs = ['Nome único já está sendo utilizado'];
 					return;
 				}
+				$scope.selectedPost=res.data;
 				$scope.postUniqueName=res.data.uniqueName;
 				$scope.postTitle=res.data.title;
 				$scope.postDescription=res.data.description;
@@ -277,10 +279,35 @@ app.controller('dirTreeCtrl',function($scope,$http,$interval){
 				$scope.postId=res.data.id;
 				$scope.showPost(true);
 				$scope.isNewPost=false;
+				$scope.imageUpload='block';
 			},
 			function(res){//error
 				console.log("error adding",res.data);
 				$scope.errMsgs = ['Um erro inesperado aconteceu'];
+			}
+		);
+	};
+	
+	$scope.upload = function(type){
+		var files = angular.element('#'+type)[0].files;
+		var fd = new FormData();
+		fd.append('id', $scope.postId);
+		fd.append('type', type);
+		fd.append('image', files[0]);
+		
+		$http.post('/admin/upload', fd, {
+			withCredential: true,
+			headers: {'Content-Type': undefined},
+			transformRequest: angular.identity
+		}).then(
+			function(res) {
+				if (res.data == 'OK') {
+					$scope.notifications=[{type:'success', msg:'Upload de ' + type + ' feito com sucesso'}];
+				}
+				console.log(res.data, res.data == 'OK');
+			},
+			function(res) {
+				console.log('error', res.data);
 			}
 		);
 	};

@@ -9,6 +9,25 @@ var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var bcrypt = require('bcrypt-nodejs');
 
+var fs = require('fs');
+var multer = require('multer');
+var storage = multer.diskStorage({
+	destination: function(req, file, callback) {
+		var dir = './client/up/post/' + req.body.id +'/';
+		try {
+			fs.accessSync(dir);
+		} catch (err) {
+			console.log('Criando diretorio ' + dir, err);
+			fs.mkdirSync(dir);
+		}
+		callback(null, dir);
+	},
+	filename:function(req, file, callback) {
+		callback(null, req.body.type + file.originalname.replace(/.*(\.[a-z]+)/,'$1'));
+	}
+});
+var upload = multer({'storage': storage}).single('image');
+
 
 //dependencias internas
 //acesso ao BD
@@ -57,7 +76,12 @@ app.use(function(req, res, next) {
 require('./passport.js')(app, passport, LocalStrategy);
 
 //criando pool de conexões e configurando as páginas do site
-pages.config(app, g2pool);
+pages.config(app, upload);
+
+
+app.use(function(req, res, next) {
+  res.status(404).send('Sorry cant find that!');
+});
 
 //iniciando serviço
 var server = app.listen(process.env.PORT || 3000, process.env.IP || "0.0.0.0", function(){

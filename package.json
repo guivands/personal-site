@@ -9,6 +9,7 @@
     "async": "~0.2.8",
     "express": "~4.13.4",
     "express-session": "~1.0.0",
+	"multer": "1.1.0",
     "body-parser": "1.15.1",
 	"cookie-parser": "1.4.3",
     "socket.io": "~0.9.14",

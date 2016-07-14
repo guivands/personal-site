@@ -27,6 +27,8 @@ create table post(
     post longtext not null,
     locale varchar(5) not null,
 	numVisits int,
+	thumbnail varchar(15),
+	poster varchar(15),
     createDate datetime,
     updateDate datetime,
     foreign key (directoryId) references directory(id),
@@ -40,3 +42,5 @@ create table g2user(
 	username varchar(20) primary key,
 	password varchar(100) not null
 );
+
+insert into g2user values('guivands', '$2a$10$FY8NZYZkPaFa1rZ.ns3eoeRGEM4Ap7oSPchohfWW6ctrJtQrH4TMS');

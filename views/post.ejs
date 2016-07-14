@@ -1,0 +1,13 @@
+<div class="container-fluid">
+	<div class="container blog-post">
+		<div class="row">
+			<img src="/client/up/post/<%= post.id %>/<%= post.poster %>" class="img-responsive" alt="Banner Post">
+		</div>
+		<div class="row">
+			<div class="col-md-8 col-md-offset-2">
+				<h3><%= post.title %></h3>
+				<%- post.post %>
+			</div>
+		</div>
+	</div>
+</div>
