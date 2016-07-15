@@ -1,6 +1,9 @@
 module.exports = {
     //Erros globais
     'CONNECTION_ERROR': 'CONNECTION_ERROR', //Erro ao buscar conexão do Pool de Conexões
+	
+	//Blog
+	'BLOG_LIST_POSTS': 'BLOG_LIST_POSTS', //Erro ao listar posts
     
     //Erros de Diretorio
     'DIR_SELECT_ALL': 'DIR_SELECT_ALL', //Erro ao buscar árvore de diretórios

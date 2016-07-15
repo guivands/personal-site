@@ -116,7 +116,7 @@ var selectSQL = function(sqlMap) {
         params = params.concat(ws.params);
     }
 
-    if(sqlMap.orderBy) {
+    if (sqlMap.orderBy) {
         sql += orderBy(sqlMap.orderBy);
     }
 

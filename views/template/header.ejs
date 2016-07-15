@@ -33,12 +33,12 @@ app.directive('g2Scroll', function($window) {
 	};
 });
 </script>
-<% if(!fadeMenu) { %>
-<style>body{padding-top:60px;}</style>
-<% } %>
 </head>
 
 <body ng-app="ggomesApp"><a name ="home"></a>
+	<% if(!fadeMenu) { %>
+	<div class="behindMenuBlock"></div>
+	<% } %>
 	<nav class="navbar navbar-fixed-top fademenu" ng-show="showMenu" ng-controller="ggomesCtrl" g2-scroll>
 		<div class="container">
 			<div class="navbar-header">

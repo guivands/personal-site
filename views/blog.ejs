@@ -7,13 +7,13 @@
 				<div class="col-md-6" style="margin-top: 100px;">
 					<h1><strong>BLOG</strong></h1>
 					<div class="col-md-8">
-						<p>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto </p>
+						<p>Artigos, problemas resolvidos, curiosidades, tutoriais. Compartilhando alguns conhecimentos e experiências que passei durante mais de uma década desenvolvendo softwares.</p>
 					</div>
 				</div>
 			</div>
 		</div>
 </div>
-<div class="container-fluid cinzaclaro2">
+<!--div class="container-fluid cinzaclaro2">
 	<div class="container">
 		<div class="col-lg-10 col-lg-offset-1 col-md-10 col-md-offset-1 col-xs-12">
 			<ul class="nav nav-tabs blog">
@@ -28,77 +28,48 @@
 			</ul>
 		</div>
 	</div>
-</div>
-
-<div class="container-fluid ">
-	<div class="container" >
+</div-->
+<style>
+.blogspot img.ng-hide{display:none;}
+</style>
+<script>
+app.controller('blogCtrl',function($scope,$http){
+	$scope.posts = [];
+	$scope.page = 0;
+	
+	$scope.loadPosts=function(){
+		$http({
+			method:'GET',
+			url:'/blogPosts/'+$scope.page,
+			headers: { 'X-Requested-With' :'XMLHttpRequest'}
+		}).then(
+			function(res){//success
+				$scope.posts=res.data;
+			},
+			function(res){//error
+				console.log("error getting posts",res.data);
+			}
+		);
+	};
+	
+	$scope.loadPosts();
+});
+</script>
+<div class="container-fluid">
+	<div class="container" ng-controller="blogCtrl">
 		<div class="col-lg-10 col-lg-offset-1 col-md-10 col-md-offset-1 col-xs-12 text-center baixo">
-			<div class="col-md-4 col-xs-6">
+			<div class="col-md-4 col-xs-6" ng-repeat="post in posts">
 				<div class="blogpost">
-					<img src="/client/img/imagemblog1.jpg" alt="blogpost" />
-					<p class="post-titulo">Categoria</p>
-					<p class="post-descricao">Lorem ipsum dolor sit amet, consectetur adipiscing </p>
+					<a href="/blog/{{post.fullpath}}">
+						<img src="/client/up/post/{{post.id}}/{{post.thumbnail}}" ng-hide="!post.thumbnail" alt="blogpost" />
+						<p class="post-titulo">{{post.directoryName}}</p>
+						<p class="post-descricao">{{post.title}}</p>
+					</a>
 				</div>
 			</div>
-			<div class="col-md-4 col-xs-6 ">
-				<div class="blogpost">
-					<img src="/client/img/imagemblog1.jpg" alt="post" />
-					<p class="post-titulo">Categoria</p>
-					<p class="post-descricao">Lorem ipsum dolor sit amet, consectetur adipiscing </p>
-				</div>
-			</div>
-			 <div class="col-md-4 col-xs-6">
-				<div class="blogpost">
-					<img src="/client/img/imagemblog1.jpg" alt="post" />
-					<p class="post-titulo">Categoria</p>
-					<p class="post-descricao">Lorem ipsum dolor sit amet, consectetur adipiscing </p>
-				</div>
-			</div>
-			<div class="col-md-4 col-xs-6 ">
-				<div class="blogpost">
-					<img src="/client/img/imagemblog1.jpg" alt="post" />
-					<p class="post-titulo">Categoria</p>
-					<p class="post-descricao">Lorem ipsum dolor sit amet, consectetur adipiscing </p>
-				</div>
-			</div>
-			<div class="col-md-4 col-xs-6 ">
-				<div class="blogpost">
-					<img src="/client/img/imagemblog1.jpg" alt="post" />
-					<p class="post-titulo">Categoria</p>
-					<p class="post-descricao">Lorem ipsum dolor sit amet, consectetur adipiscing </p>
-				</div>
-			</div>
-			 <div class="col-md-4 col-xs-6 ">
-				<div class="blogpost">
-					<img src="/client/img/imagemblog1.jpg" alt="post" />
-					<p class="post-titulo">Categoria</p>
-					<p class="post-descricao">Lorem ipsum dolor sit amet, consectetur adipiscing </p>
-				</div>
-			</div>
-			 <div class="col-md-4 col-xs-6 ">
-				<div class="blogpost">
-					<img src="/client/img/imagemblog1.jpg" alt="post" />
-					<p class="post-titulo">Categoria</p>
-					<p class="post-descricao">Lorem ipsum dolor sit amet, consectetur adipiscing </p>
-				</div>
-			</div>
-			 <div class="col-md-4 col-xs-6 ">
-				<div class="blogpost">
-					<img src="/client/img/imagemblog1.jpg" alt="post" />
-					<p class="post-titulo">Categoria</p>
-					<p class="post-descricao">Lorem ipsum dolor sit amet, consectetur adipiscing </p>
-				</div>
-			</div>
-			<div class="col-md-4 col-xs-6">
-				<div class="blogpost">
-					<img src="/client/img/imagemblog1.jpg" alt="post" />
-					<p class="post-titulo">Categoria</p>
-					<p class="post-descricao">Lorem ipsum dolor sit amet, consectetur adipiscing </p>
-				</div>
-			</div>
-			<div class="col-md-12 text-center">
+			<!--div class="col-md-12 text-center">
 				<a class="btn icon-btn btn-carregar" href="#"><span class="glyphicon glyphicon-repeat"></span> Carregar Mais</a>
-			</div>
+			</div-->
 		</div>
 	</div>
 </div>

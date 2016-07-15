@@ -3,6 +3,9 @@ var ERROR_CODES = require('../ERROR_CODES');
 var util = require('../util');
 var sqlUtil = require('../sql-util');
 
+const REGS_PER_PAGE = 9;
+
+
 var mapPost = function(row) {
 	return {
 		'id' : row.id,
@@ -319,6 +322,40 @@ var addPoster = function(postId, posterName, callback) {
 	});
 };
 
+var listBlogPosts = function(locale, page, directoryId, callback) {
+	if (!page)
+		page = 0;
+	
+	var sql = 'select p.id, p.title, p.fullpath, p.thumbnail, d.name from post p, directory d where p.directoryId = d.id and p.locale = ?';
+	var params = [locale];
+	if (directoryId) {
+		params.push(directoryId);
+		sql += ' and d.id = ?';
+	}
+	if (page > 0) {
+		sql += ' limit ' + (page-1 * REGS_PER_PAGE) + ', ' + REGS_PER_PAGE;
+	} else {
+		sql += ' limit ' + REGS_PER_PAGE;
+	}
+	
+	g2pool.query(sql, params, function (err, rows){
+		if (err)
+			return callback(err);
+		var posts = [];
+		for (var i in rows) {
+			var row = rows[i];
+			posts.push({
+				'id': row.id,
+				'title': row.title,
+				'fullpath': row.fullpath,
+				'thumbnail': row.thumbnail,
+				'directoryName': row.name
+			});
+		}
+		callback(null, posts);
+	});
+}
+
 module.exports.findPostByPath = findPostByPath;
 module.exports.addPost = addPost;
 module.exports.updatePost = updatePost;
@@ -328,3 +365,4 @@ module.exports.findPostById = findPostById;
 module.exports.homeList = homeList;
 module.exports.addPoster = addPoster;
 module.exports.addThumbnail = addThumbnail;
+module.exports.listBlogPosts = listBlogPosts;

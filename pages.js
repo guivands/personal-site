@@ -3,6 +3,7 @@ var dirTree = require('./package/dir_tree/functions');
 var post = require('./package/post/functions');
 var i18n = require('./package/i18n/lang.js');
 var BizError = require('./package/error');
+var ERROR_CODES = require('./package/ERROR_CODES');
 
 //configuracao de paginas do site
 var config = function(app, upload) {
@@ -19,6 +20,18 @@ var config = function(app, upload) {
     app.get('/blog', function(req,res) {
 		res.g2render('blog', {'fadeMenu':true});
     });
+	app.all(/\/blogPosts\/[0-9]+/, function(req, res) {
+		var page = req.path.replace(/[^0-9]/g, '');
+		if (page)
+			page = parseInt(page);
+		post.listBlogPosts('pt', page, null, function (err, posts) {
+			if (err) {
+				return new BizError(err, ERROR_CODES.BLOG_LIST_POSTS, 'Erro ao buscar posts').sendResponse(req, res);
+			}
+			res.setHeader('content-type', 'tetx/javascript');
+			res.send(posts);
+		});
+	});
 	
     app.get('/blog/*', function(req,res) {
 		var fullpath = req.path.replace(/.*\/blog\/(.*)/,'$1');
@@ -31,7 +44,7 @@ var config = function(app, upload) {
 				res.setStatus(500).send(err);
 			}
 			if (!post)
-				return BizError.notFoun(req, res);
+				return BizError.notFound(req, res);
 			res.g2render('post', {'fadeMenu':false, 'post': post});
 		});
     });
