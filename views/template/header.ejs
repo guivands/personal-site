@@ -4,7 +4,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<title>GuilhermeGomes</title>
+<title><% if (pageTitle) { %><%= pageTitle %> - <% } %>GuilhermeGomes</title>
 <!-- Latest compiled and minified CSS -->
 <link href="/client/css/bootstrap.css" rel="stylesheet">
 <link href="/client/css/style.css" rel="stylesheet">
@@ -51,11 +51,11 @@ app.directive('g2Scroll', function($window) {
 			</div>
 			<div class="collapse navbar-collapse" id="g2menu">
 				<ul class="nav navbar-nav navbar-right">
-					<li class="active"><a href="#home">Home</a></li>
-					<li><a href="#projetos">Projetos</a></li>
-					<li><a href="#">Curriculum</a></li>
-					<li><a href="#">Blog</a></li>
-					<li><a href="#contato">Contato</a></li>
+					<li class="active"><a href="/">Home</a></li>
+					<li><a href="/#projetos">Projetos</a></li>
+					<!--li><a href="#">Curriculum</a></li-->
+					<li><a href="/blog">Blog</a></li>
+					<li><a href="/#contato">Contato</a></li>
 				</ul>
 			</div>
 		</div>

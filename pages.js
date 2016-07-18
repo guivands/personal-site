@@ -4,11 +4,12 @@ var post = require('./package/post/functions');
 var i18n = require('./package/i18n/lang.js');
 var BizError = require('./package/error');
 var ERROR_CODES = require('./package/ERROR_CODES');
+var mail = require('./package/mail');
 
 //configuracao de paginas do site
 var config = function(app, upload) {
     app.get('/', function(req,res) {
-		post.homeList(function(err, posts){
+		post.homeList('pt', function(err, posts){
 			if (err) {
 				console.log(err);
 				return res.g2render('index', {'fadeMenu':true, 'posts':[]});
@@ -17,8 +18,23 @@ var config = function(app, upload) {
 		});
     });
 	
+	app.post('/contactme', function (req, res) {
+		if (!req.body.name || !req.body.email || !req.body.message) {
+			return res.status(500).send('Todos os campos devem ser preenchidos');
+		}
+		
+		var subject = 'Nome: '+ req.body.name + '\nEmail: ' + req.body.email + '\n\nMensagem:\n' + req.body.mensagem;
+		mail('from', 'to', 'GuilhermeGom.es - Let\'s create something together', subject, function (err, info) {
+			if (err) {
+				console.log('pages.home.contactme', err);
+				return res.status(500).send('Não foi possível efetuar o contato. Tente novamente mais tarde.');
+			}
+			res.send('OK');
+		});
+	});
+	
     app.get('/blog', function(req,res) {
-		res.g2render('blog', {'fadeMenu':true});
+		res.g2render('blog');
     });
 	app.all(/\/blogPosts\/[0-9]+/, function(req, res) {
 		var page = req.path.replace(/[^0-9]/g, '');
@@ -45,7 +61,7 @@ var config = function(app, upload) {
 			}
 			if (!post)
 				return BizError.notFound(req, res);
-			res.g2render('post', {'fadeMenu':false, 'post': post});
+			res.g2render('post', {'post': post});
 		});
     });
 
@@ -150,7 +166,7 @@ var config = function(app, upload) {
 	
 
 	app.all('/admin/', isLoggedIn, function(req, res){
-		res.g2render('adm/index', {'fadeMenu':false});
+		res.g2render('adm/index');
 	});
 	
 	app.post('/admin/upload', isLoggedIn, function(req, res) {

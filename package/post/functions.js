@@ -26,43 +26,51 @@ var mapPost = function(row) {
 	};
 };
 
-var homeList = function(callback){
+var homeList = function(locale, callback){
 	var posts = [];
 
-	var sqlMap = {
-		table:'post',
-		orderBy:{'numVisits':'desc'},
-		limit:'2'
-	};
-	
-	sqlUtil.executeQuery(g2pool, sqlMap, function(err, rows){
+	var sql = 'select p.id, p.title, p.fullpath, p.thumbnail, d.name from post p, directory d where p.directoryId = d.id and p.locale = ? order by numVisits desc limit 2';
+	g2pool.query(sql, [locale], function (err, rows) {
 		if(err) {
 			return callback(new BizError(err, ERROR_CODES.POST_HOME_MOST_VIEW, 'Erro ao buscar posts mais acessados'));
 		}
 		var ids = [];
 		for (var i in rows) {
-			posts.push(mapPost(rows[i]));
-			ids.push(rows[i].id);
+			var row = rows[i];
+			posts.push({
+				'id': row.id,
+				'title': row.title,
+				'fullpath': row.fullpath,
+				'thumbnail': row.thumbnail,
+				'directoryName': row.name
+			});
+			ids.push(row.id);
 		}
 		
-		sqlMap.orderBy = {'createDate':'desc'};
-		sqlMap.limit = 1;
+		sql = 'select p.id, p.title, p.fullpath, p.thumbnail, d.name from post p, directory d where p.directoryId = d.id and p.locale = ? ';
 		if (ids.length > 0) {
-			sqlMap.where = 'id not in (';
+			sql += ' and p.id not in (';
 			for(var j = 0; j < ids.length; j++) {
-				sqlMap.where += ids[j];
+				sql += ids[j];
 				if (j + 1 < ids.length)
-					sqlMap.where += ',';
+					sql += ',';
 			}
-			sqlMap.where += ')';
+			sql += ')';
 		}
+		sql += ' limit 1';
 		
-		sqlUtil.executeQuery(g2pool, sqlMap, function(err, rows2){
+		g2pool.query(sql, [locale], function (err, rows2){
 			if(err) {
 				return callback(new BizError(err, ERROR_CODES.POST_HOME_LATEST, 'Erro ao buscar post mais novo'));
 			}
 			if (rows2.length > 0) {
-				posts.push(mapPost(rows2[0]));
+				posts.push({
+					'id': rows2[0].id,
+					'title': rows2[0].title,
+					'fullpath': rows2[0].fullpath,
+					'thumbnail': rows2[0].thumbnail,
+					'directoryName': rows2[0].name
+				});
 			}
 			
 			callback(null, posts);

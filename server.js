@@ -65,6 +65,14 @@ app.use(function(req, res, next) {
 	if (res) {
 		res.g2render = function(page, params) {
 			var g2params = {};
+			
+			if (!params)
+				params = {};
+			if (!params.pageTitle)
+				params.pageTitle = false;
+			if (!params.fadeMenu)
+				params.fadeMenu = false;
+			
 			g2params.page = '../' + page;
 			g2params.params = params;
 			res.render('template/template', g2params);
