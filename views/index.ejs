@@ -111,11 +111,11 @@
 		<div class="col-lg-10 col-lg-offset-1 col-md-10 col-md-offset-1 col-xs-12 text-center">
 			<% for (post in posts) { %>
 			<div class="col-md-4 col-xs-12">
-				<div class="post">
+				<div class="post"><a href="/blog/<%= posts[post].fullpath %>">
 					<% if (posts[post].thumbnail) { %><img src="/client/up/post/<%= posts[post].id %>/<%= posts[post].thumbnail %>" alt="post" /><% } %>
-					<p class="post-titulo"><%= posts[post].title %></p>
-					<p class="post-descricao"><%= posts[post].description %></p>
-				</div>
+					<p class="post-titulo"><%= posts[post].directoryName %></p>
+					<p class="post-descricao"><%= posts[post].title %></p>
+				</a></div>
 			</div>
 			<% } %>
 			</div>

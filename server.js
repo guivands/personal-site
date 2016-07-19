@@ -72,6 +72,10 @@ app.use(function(req, res, next) {
 				params.pageTitle = false;
 			if (!params.fadeMenu)
 				params.fadeMenu = false;
+			if (!params.description)
+				params.description = 'Guilherme Gomes - Tutoriais, artigos, curiosidades e outras informações. Site pessoal do profissional de TI, desenvolvedor e arquiteto de softwares Guilherme Gomes.';
+			if (!params.keywords)
+				params.keywords = 'Guilherme,Gomes,desenvolvedor,arquiteto';
 			
 			g2params.page = '../' + page;
 			g2params.params = params;

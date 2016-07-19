@@ -61,7 +61,7 @@ var config = function(app, upload) {
 			}
 			if (!post)
 				return BizError.notFound(req, res);
-			res.g2render('post', {'post': post});
+			res.g2render('post', {'post': post, 'pageTitle':post.title, 'description': post.description, 'keywords': post.tags});
 		});
     });
 
