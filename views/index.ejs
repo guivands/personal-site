@@ -102,6 +102,7 @@
 	</div>
 </div>
 
+<% if (posts.length > 0 ) { %>
 <div class="container-fluid cinzaclaro">
 	<div class="container" >
 		<div class="row text-center">
@@ -117,30 +118,12 @@
 				</div>
 			</div>
 			<% } %>
-			<!--div class="col-md-4 col-xs-12">
-				<div class="post">
-					<img src="/client/img/imagemblog1.jpg" alt="post" />
-					<p class="post-titulo">Categoria</p>
-					<p class="post-descricao">Lorem ipsum dolor sit amet, consectetur adipiscing </p>
-				</div>
-			</div>
-			<div class="col-md-4 col-xs-12 ">
-				<div class="post">
-					<img src="/client/img/imagemblog1.jpg" alt="post" />
-					<p class="post-titulo">Categoria</p>
-					<p class="post-descricao">Lorem ipsum dolor sit amet, consectetur adipiscing </p>
-				</div>
-			</div>
-			<div class="col-md-4 col-xs-12">
-				<div class="post">
-					<img src="/client/img/imagemblog1.jpg" alt="post" />
-					<p class="post-titulo">Categoria</p>
-					<p class="post-descricao">Lorem ipsum dolor sit amet, consectetur adipiscing </p>
-				</div-->
 			</div>
 		</div>
 	</div>
 </div>
+<% } %>
+
 <div class="container-fluid quaserodape"><a name ="contato"></a>
 	<div class="container">
 		<div class="row">
@@ -148,24 +131,24 @@
 				<div class="col-md-8 col-md-offset-3 text-center">
 					<img src="/client/img/foto-perfil.png" alt="Foto guilherme" class="fotoperfil" />
 					<p class="nome">Guilherme Gomes</p>
-					<div class="redesociais">
+					<!--div class="redesociais">
 						<a href="#" class="facebook"><img src="/client/img/facebook.png" alt="facebook" /></a>
 						<a href="#" class="linkedin"><img src="/client/img/linkedin.png" alt="linkedin" /></a>
 						<a href="#" class="twitter"><img src="/client/img/twitter.png" alt="twitter" /></a>
 						<a href="#" class="whatsapp"><img src="/client/img/whatsapp.png" alt="whatsapp" /></a>
-					</div>
+					</div-->
 				</div>
 			</div>
 			<div class="col-md-7">
 				<h3 style="margin-bottom:40px;">Let’s create something together!</h3>
 				<script>
 				app.controller('contactMe', function($scope,$http){
-					if (!$scope.name || !$scope.email || !$scope.message) {
-						$scope.messages = [{type:'danger',message:'Todos os campos devem ser preenchidos'}];
-						return;
-					}
 					$scope.messages = [];
 					$scope.sendMail=function(){
+						if (!$scope.name || !$scope.email || !$scope.message) {
+							$scope.messages = [{type:'danger',msg:'Todos os campos devem ser preenchidos'}];
+							return;
+						}
 						var pdata = {
 							'name':$scope.name,
 							'email':$scope.email,
