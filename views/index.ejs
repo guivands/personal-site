@@ -144,6 +144,8 @@
 				<script>
 				app.controller('contactMe', function($scope,$http){
 					$scope.messages = [];
+					$scope.disableButton=false;
+					$scope.buttonTxt='Enviar';
 					$scope.sendMail=function(){
 						if (!$scope.name || !$scope.email || !$scope.message) {
 							$scope.messages = [{type:'danger',msg:'Todos os campos devem ser preenchidos'}];
@@ -154,6 +156,8 @@
 							'email':$scope.email,
 							'message':$scope.message
 						};
+						$scope.disableButton=true;
+						$scope.buttonTxt='Enviando...';
 						$http({
 							method:'POST',
 							url:'/contactme',
@@ -163,9 +167,13 @@
 							function(res){//success
 								$scope.messages = [{type:'success', msg:'Mensagem enviada. Obrigado :)'}];
 								$scope.name=$scope.email=$scope.message='';
+								$scope.disableButton=false;
+								$scope.buttonTxt='Enviar';
 							},
 							function(res){//error
 								$scope.messages = [{type:'danger',msg:'Erro: '+res.data}];
+								$scope.disableButton=false;
+								$scope.buttonTxt='Enviar';
 							}
 						);
 					}
@@ -189,7 +197,7 @@
 					<div class="row">
 						<div class="col-md-10">
 							<textarea class="form-control" rows="6" placeholder="Mensagem" ng-model="message"></textarea>
-							<button type="submit" class="btn btn-primary" ng-click="sendMail()">Enviar</button>
+							<button type="submit" class="btn btn-primary" ng-click="sendMail()" ng-disabled="disableButton">{{buttonTxt}}</button>
 						</div>
 					</div>
 				</form>

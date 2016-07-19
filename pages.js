@@ -23,8 +23,8 @@ var config = function(app, upload) {
 			return res.status(500).send('Todos os campos devem ser preenchidos');
 		}
 		
-		var subject = 'Nome: '+ req.body.name + '\nEmail: ' + req.body.email + '\n\nMensagem:\n' + req.body.mensagem;
-		mail('from', 'to', 'GuilhermeGom.es - Let\'s create something together', subject, function (err, info) {
+		var mailBody = 'Nome: '+ req.body.name + '\nEmail: ' + req.body.email + '\n\nMensagem:\n' + req.body.message;
+		mail('from', 'to', 'GuilhermeGom.es - Let\'s create something together', mailBody, function (err, info) {
 			if (err) {
 				console.log('pages.home.contactme', err);
 				return res.status(500).send('Não foi possível efetuar o contato. Tente novamente mais tarde.');

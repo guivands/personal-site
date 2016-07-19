@@ -21,8 +21,21 @@
 <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.js"></script>
 
+
+<link rel='stylesheet' href='/client/css/loading-bar.css' type='text/css' media='all' />
+<script type='text/javascript' src='/client/js/loading-bar.js'></script>
+
+
 <script>
-var app = angular.module('ggomesApp', ['ngAnimate']);
+var app = angular.module('ggomesApp', ['angular-loading-bar']);
+app.config(['cfpLoadingBarProvider', function(cfpLoadingBarProvider) {
+	cfpLoadingBarProvider.includeBar = true;
+	cfpLoadingBarProvider.parentSelector = '#progressBar';
+}]);
+app.config(function($locationProvider) {
+	$locationProvider.html5Mode(true).hashPrefix('!');
+})
+
 app.controller('ggomesCtrl',function($scope,$http,$interval,$animate) {
 	$scope.showMenu=false;
 });
