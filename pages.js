@@ -11,7 +11,7 @@ var config = function(app, upload) {
     app.get('/', function(req,res) {
 		post.homeList('pt', function(err, posts){
 			if (err) {
-				console.log(err);
+				logger.info(err);
 				return res.g2render('index', {'fadeMenu':true, 'posts':[]});
 			}
 			res.g2render('index', {'fadeMenu':true, 'posts': posts});
@@ -26,7 +26,7 @@ var config = function(app, upload) {
 		var mailBody = 'Nome: '+ req.body.name + '\nEmail: ' + req.body.email + '\n\nMensagem:\n' + req.body.message;
 		mail('from', 'to', 'GuilhermeGom.es - Let\'s create something together', mailBody, function (err, info) {
 			if (err) {
-				console.log('pages.home.contactme', err);
+				logger.info('pages.home.contactme', err);
 				return res.status(500).send('Não foi possível efetuar o contato. Tente novamente mais tarde.');
 			}
 			res.send('OK');
@@ -56,7 +56,7 @@ var config = function(app, upload) {
 				if (err.g2error) {
 					return err.sendResponse(req, res);
 				}
-				console.log('pages.blog/post:', err);
+				logger.info('pages.blog/post:', err);
 				res.setStatus(500).send(err);
 			}
 			if (!post)
@@ -91,7 +91,7 @@ var config = function(app, upload) {
 				if (err.g2error) {
 					return err.sendResponse(req, res);
 				}
-				console.log('pages.addTreeNode:', err);
+				logger.info('pages.addTreeNode:', err);
 				res.setStatus(500).send(err);
 			}
 			res.setHeader('content-type', 'tetx/javascript');
@@ -108,7 +108,7 @@ var config = function(app, upload) {
 				if (err.g2error) {
 					return err.sendResponse(req, res);
 				}
-				console.log('pages.removeTreeNode:', err);
+				logger.info('pages.removeTreeNode:', err);
 				res.setStatus(500).send(err);
 			}
 			res.setHeader('content-type', 'tetx/javascript');
@@ -125,7 +125,7 @@ var config = function(app, upload) {
 				if (err.g2error) {
 					return err.sendResponse(req, res);
 				}
-				console.log('pages.removeTreeNode:', err);
+				logger.info('pages.removeTreeNode:', err);
 				res.setStatus(500).send(err);
 			}
 			res.setHeader('content-type', 'tetx/javascript');
@@ -139,7 +139,7 @@ var config = function(app, upload) {
 				if (err.g2error) {
 					return err.sendResponse(req, res);
 				}
-				console.log('pages.removeTreeNode:', err);
+				logger.info('pages.removeTreeNode:', err);
 				res.setStatus(500).send(err);
 			}
 			res.setHeader('content-type', 'tetx/javascript');
@@ -156,7 +156,7 @@ var config = function(app, upload) {
 				if (err.g2error) {
 					return err.sendResponse(req, res);
 				}
-				console.log('pages.removeTreeNode:', err);
+				logger.info('pages.removeTreeNode:', err);
 				res.setStatus(500).send(err);
 			}
 			res.setHeader('content-type', 'tetx/javascript');
@@ -166,7 +166,7 @@ var config = function(app, upload) {
 	
 
 	app.all('/admin/', isLoggedIn, function(req, res){
-		res.g2render('adm/index');
+		res.render('adm/index');
 	});
 	
 	app.post('/admin/upload', isLoggedIn, function(req, res) {
@@ -180,7 +180,7 @@ var config = function(app, upload) {
 						if (err.g2error) {
 							return err.sendResponse(req, res);
 						}
-						console.log('admin.upload:', err);
+						logger.info('admin.upload:', err);
 						res.setStatus(500).send(err);
 					}
 					res.end('OK');
@@ -192,7 +192,7 @@ var config = function(app, upload) {
 						if (err.g2error) {
 							return err.sendResponse(req, res);
 						}
-						console.log('admin.upload:', err);
+						logger.info('admin.upload:', err);
 						res.setStatus(500).send(err);
 					}
 					res.end('OK');
@@ -215,6 +215,8 @@ var config = function(app, upload) {
 	app.all('/findPostById', post.findPostById);
     // Chamada assincrona para criacao de post
     app.post('/mergePost', isLoggedIn, post.mergePost);
+	
+	logger.info('pages configured');
 }
 
 module.exports.config = config;

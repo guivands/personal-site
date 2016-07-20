@@ -184,7 +184,8 @@ textarea{
 }
 .fademenu.ng-hide {
 	opacity: 0;
-		}
+	transition: 0.5s linear opacity;
+}
 .fademenu {
 	opacity: 1;
 	transition: 0.5s linear opacity;

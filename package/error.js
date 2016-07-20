@@ -3,7 +3,7 @@ var BizError = function(err,cd,msg) {
     this.code = cd;
     this.message = msg;
     this.g2Error = true;
-    console.error(this);
+    logger.error(this);
 };
 
 BizError.prototype.sendResponse = function(req, res) {

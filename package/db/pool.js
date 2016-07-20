@@ -2,7 +2,7 @@ var mysql = require("mysql");
 var dbConfig = require("./db-config.js");
 
 
-console.log("creating connection pool...");
+logger.info("creating connection pool...");
 var pool = mysql.createPool({
 	host:dbConfig.host,
 	user:dbConfig.user,
@@ -10,7 +10,7 @@ var pool = mysql.createPool({
 	database:dbConfig.database,
 	connectionLimit:10
 });
-console.log("connection pool created");
+logger.info("connection pool created");
     
 global.g2pool = pool;
 

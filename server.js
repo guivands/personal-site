@@ -8,6 +8,14 @@ var ejs = require('ejs');
 var passport = require('passport');
 var LocalStrategy = require('passport-local').Strategy;
 var bcrypt = require('bcrypt-nodejs');
+var winston = require('winston');
+
+global.logger = new (winston.Logger)({
+	transports: [
+		new (winston.transports.Console)({level:'debug'}),
+		new (winston.transports.File)({ filename: '../guilhermegom.es.log', level:'debug'})
+	]
+});
 
 var fs = require('fs');
 var multer = require('multer');
@@ -17,7 +25,7 @@ var storage = multer.diskStorage({
 		try {
 			fs.accessSync(dir);
 		} catch (err) {
-			console.log('Criando diretorio ' + dir, err);
+			logger.info('Criando diretorio ' + dir, err);
 			fs.mkdirSync(dir);
 		}
 		callback(null, dir);
@@ -54,9 +62,10 @@ app.use(function(req, res, next) {
 	try {
 		res.g2messages = res.locals.g2messages = i18n.resolve(req.path);
 	} catch (err) {
-		console.log(err);
+		logger.info(err);
 		return res.render('500');
 	}
+	res.locals.gAnalytics = false;
 	next();
 });
 
@@ -98,5 +107,5 @@ app.use(function(req, res, next) {
 //iniciando serviço
 var server = app.listen(process.env.PORT || 3000, process.env.IP || "0.0.0.0", function(){
   var addr = server.address();
-  console.log("Servidor iniciado em", addr.address + ":" + addr.port);
+  logger.info("Servidor iniciado em", addr.address + ":" + addr.port);
 });

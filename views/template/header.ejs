@@ -27,7 +27,7 @@
 
 
 <script>
-var app = angular.module('ggomesApp', ['angular-loading-bar']);
+var app = angular.module('ggomesApp', ['angular-loading-bar','ngAnimate']);
 app.config(['cfpLoadingBarProvider', function(cfpLoadingBarProvider) {
 	cfpLoadingBarProvider.includeBar = true;
 	cfpLoadingBarProvider.parentSelector = '#progressBar';

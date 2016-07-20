@@ -46,9 +46,9 @@ module.exports = function(app, passport, LocalStrategy) {
 		res.redirect('/');
 	});
 
-	app.all('/loginForm', function(req, res){
+	app.all('/g2login', function(req, res){
 		res.setHeader('content-type','text/html');
-		res.end('<form action="/login" method="post"><div><label>Username:</label><input type="text" name="username"/></div><div><label>Password:</label><input type="password" name="password"/></div><div><input type="submit" value="Log In"/></div></form>');
+		res.render('login');
 	});
 };
 

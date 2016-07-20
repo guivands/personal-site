@@ -1,3 +1,61 @@
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="author" content="Guilherme Gomes" />
+<meta http-equiv="content-language" content="pt" />
+
+<title>Site Admin - GuilhermeGomes</title>
+<!-- Latest compiled and minified CSS -->
+<link href="/client/css/bootstrap.css" rel="stylesheet">
+<link href="/client/css/style.css" rel="stylesheet">
+<link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+<script src="/client/js/bootstrap.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+<script src="http://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular-animate.js"></script>
+
+
+<link rel='stylesheet' href='/client/css/loading-bar.css' type='text/css' media='all' />
+<script type='text/javascript' src='/client/js/loading-bar.js'></script>
+
+
+<script>
+var app = angular.module('ggomesApp', ['angular-loading-bar','ngAnimate']);
+app.config(['cfpLoadingBarProvider', function(cfpLoadingBarProvider) {
+	cfpLoadingBarProvider.includeBar = true;
+	cfpLoadingBarProvider.parentSelector = '#progressBar';
+}]);
+app.config(function($locationProvider) {
+	$locationProvider.html5Mode(true).hashPrefix('!');
+})
+</script>
+</head>
+
+<body ng-app="ggomesApp">
+
+<nav class="navbar fademenu">
+	<div class="container">
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#g2menu">
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+				<span class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="#"><img src="/client/img/logo_menu.png" alt="Logo GuilhermeGomes"/></a>
+		</div>
+		<div class="collapse navbar-collapse" id="g2menu">
+			<ul class="nav navbar-nav navbar-right">
+				<li><a href="/logout" onclick="return confirm('Sair?')"><i class="fa fa-sign-out" aria-hidden="true"></i>Logout</a></li>
+			</ul>
+		</div>
+	</div>
+</nav>
+
+
 
 
 <script src="/client/js/g2-tree.js"></script>
@@ -211,3 +269,21 @@
 		</div>
 	</div>
 </div>
+
+
+
+
+    <div class="container-fluid rodape">
+    	<div class="container">
+        	<div class="row">
+                <div class="col-md-12">
+                    <div class="col-md-10 col-md-offset-1">
+                    	<img src="/client/img/logo_rodape.png" alt="logo guilhermegomes" />
+					</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
